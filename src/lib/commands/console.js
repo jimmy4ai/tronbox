@@ -1,7 +1,31 @@
+const version = require('../version');
+const describe = 'Run a console with contract abstractions and commands available';
+
 const command = {
   command: 'console',
-  description: 'Run a console with contract abstractions and commands available',
-  builder: {},
+  describe,
+  builder: yargs => {
+    yargs
+      .usage(
+        `TronBox v${version.bundle}\n\n${describe}\n
+Usage: $0 console [--network <network>] [--evm]`
+      )
+      .version(false)
+      .options({
+        network: {
+          describe: 'Network name in configuration',
+          type: 'string'
+        },
+        evm: {
+          describe: 'Use EVM configuration',
+          type: 'boolean'
+        }
+      })
+      .example('$0 console', 'Start the console with the development network')
+      .example('$0 console --network nile', 'Start the console with the nile network')
+      .example('$0 console --evm', 'Start the console with EVM configuration')
+      .group(['network', 'evm', 'help'], 'Options:');
+  },
   run: function (options, done) {
     process.env.CURRENT = 'console';
     const Config = require('../../components/Config');
@@ -29,7 +53,7 @@ const command = {
 
     // This require a smell?
     const commands = require('./index');
-    const excluded = ['console', 'init', 'watch', 'serve'];
+    const excluded = ['console', 'init', 'flatten', 'unbox'];
 
     const available_commands = Object.keys(commands).filter(function (name) {
       return excluded.indexOf(name) === -1;

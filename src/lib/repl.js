@@ -3,7 +3,6 @@ const expect = require('@truffle/expect');
 const async = require('async');
 const EventEmitter = require('events');
 const inherits = require('util').inherits;
-const TronWrap = require('../components/TronWrap');
 
 inherits(ReplManager, EventEmitter);
 

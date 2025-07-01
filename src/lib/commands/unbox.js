@@ -2,7 +2,7 @@
  * returns a VCS url string given:
  * - a VCS url string
  * - a github `org/repo` string
- * - a string containing a repo under the `truffle-box` org
+ * - a string containing a repo under the `tronsuper` org
  */
 function normalizeURL(url) {
   url = url || 'https://github.com/tronsuper/bare-box';
@@ -52,10 +52,35 @@ function formatCommands(commands) {
   });
 }
 
+const version = require('../version');
+const describe = 'Download a pre-built TronBox Box template';
+
 const command = {
   command: 'unbox',
-  description: 'Download a tronbox Box, a pre-built tronbox project',
-  builder: {},
+  describe,
+  builder: yargs => {
+    yargs
+      .usage(
+        `TronBox v${version.bundle}\n\n${describe}\n
+Usage: $0 unbox [<name>] [--quiet]`
+      )
+      .version(false)
+      .options({
+        quiet: {
+          describe: 'Suppress all output except errors',
+          type: 'boolean'
+        }
+      })
+      .positional('name', {
+        describe: 'Box name, GitHub username/repo, or a full git repo URL. If omitted, downloads the default box.',
+        type: 'string'
+      })
+      .example('$0 unbox', 'Download the default TronBox Box')
+      .example('$0 unbox metacoin', 'Download the "metacoin" TronBox Box')
+      .example('$0 unbox tronsuper/bare-box', 'Download a TronBox Box from a GitHub username/repository')
+      .example('$0 unbox https://gitlab.com/user/my-box', 'Download a TronBox Box using its full Git repository URL')
+      .group(['quiet', 'help'], 'Options:');
+  },
   run: function (options, done) {
     const Config = require('../../components/Config');
     const Box = require('../../components/Box');

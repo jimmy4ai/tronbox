@@ -1,7 +1,46 @@
+const version = require('../version');
+const describe = 'Run JavaScript and Solidity tests';
+
 const command = {
   command: 'test',
-  description: 'Run JavaScript and Solidity tests',
-  builder: {},
+  describe,
+  builder: yargs => {
+    yargs
+      .usage(
+        `TronBox v${version.bundle}\n\n${describe}\n
+Usage: $0 test [<files...>] [--file <file>]
+                    [--network <network>] [--compile-all] [--evm]`
+      )
+      .version(false)
+      .options({
+        file: {
+          describe: 'Specify a single test file path to run',
+          type: 'string'
+        },
+        network: {
+          describe: 'Network name in configuration',
+          type: 'string'
+        },
+        'compile-all': {
+          describe: 'Recompile all contracts',
+          type: 'boolean'
+        },
+        evm: {
+          describe: 'Use EVM configuration',
+          type: 'boolean'
+        }
+      })
+      .positional('files', {
+        describe: 'One or more test file paths to run',
+        type: 'string',
+        array: true
+      })
+      .group(['file', 'network', 'compile-all', 'evm', 'help'], 'Options:')
+      .example('$0 test', 'Run all tests')
+      .example('$0 test test/t1.js', 'Run a single test file')
+      .example('$0 test test/t1.js test/t2.js', 'Run multiple test files')
+      .example('$0 test --file test/t1.js', 'Run a single test file');
+  },
   run: function (options, done) {
     const OS = require('os');
     const dir = require('node-dir');
