@@ -147,6 +147,7 @@ Console.prototype.resetContractsInConsoleContext = function (abstractions) {
   const contextVars = {};
 
   abstractions.forEach(function (abstraction) {
+    if (abstraction.contract_name === 'console') return;
     contextVars[abstraction.contract_name] = abstraction;
   });
 
@@ -156,8 +157,19 @@ Console.prototype.resetContractsInConsoleContext = function (abstractions) {
 Console.prototype.interpret = function (cmd, context, filename, callback) {
   const self = this;
 
-  if (cmd.trim() !== 'help' && this.command.getCommand(cmd.trim(), this.options.noAliases) != null) {
-    return self.command.run(cmd.trim(), this.options, function (err) {
+  cmd = cmd.trim();
+  if (cmd === '') {
+    return callback();
+  }
+
+  const cmdRes = this.command.getCommand(cmd, this.options.noAliases);
+  if (cmdRes != null) {
+    if (cmdRes.name !== 'help' && cmdRes.argv.help) {
+      this.command.args.parse(cmd);
+      return callback();
+    }
+
+    return self.command.run(cmd, this.options, function (err) {
       if (err) {
         // Perform error handling ourselves.
         if (err instanceof TruffleError) {
