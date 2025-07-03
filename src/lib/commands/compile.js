@@ -35,6 +35,12 @@ Usage: $0 compile [--all] [--evm] [--quiet] `
     const Config = require('../../components/Config');
     const Contracts = require('../../components/WorkflowCompile');
 
+    if (options.quiet || options.silent) {
+      options.logger = {
+        log: function () {}
+      };
+    }
+
     const config = Config.detect(options);
     Contracts.compile(config, done);
   }
