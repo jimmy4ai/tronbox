@@ -113,11 +113,8 @@ module.exports = {
     // statement right on the end; just to ensure it will error and we can parse
     // the imports speedily without doing extra work.
 
-    // Helper to detect import errors with an easy regex.
-    const importErrorKey = 'TRUFFLE_IMPORT';
-
     // Inject failing import.
-    const failingImportFileName = '__Truffle__NotFound.sol';
+    const failingImportFileName = '__TronBox__NotFound.sol';
 
     body = body + "\n\nimport '" + failingImportFileName + "';\n";
 
@@ -138,16 +135,7 @@ module.exports = {
     };
 
     const solc = getWrapper(options);
-    let output = solc[solc.compileStandard ? 'compileStandard' : 'compile'](JSON.stringify(solcStandardInput), {
-      // New syntax (supported from 0.5.12, mandatory from 0.6.0)
-      // tronbox compiler --all
-      import: function () {
-        // The existence of this function ensures we get a parsable error message.
-        // Without this, we'll get an error message we *can* detect, but the key will make it easier.
-        // Note: This is not a normal callback. See docs here: https://github.com/ethereum/solc-js#from-version-021
-        return { error: importErrorKey };
-      }
-    });
+    let output = solc[solc.compileStandard ? 'compileStandard' : 'compile'](JSON.stringify(solcStandardInput));
 
     output = JSON.parse(output);
 
@@ -155,19 +143,6 @@ module.exports = {
     const errors = output.errors.filter(function (solidity_error) {
       return solidity_error.message.indexOf(preReleaseCompilerWarning) < 0;
     });
-
-    const nonImportErrors = errors.filter(function (solidity_error) {
-      // If the import error key is not found, we must not have an import error.
-      // This means we have a *different* parsing error which we should show to the user.
-      // Note: solc can return multiple parsing errors at once.
-      // We ignore the "pre-release compiler" warning message.
-      return solidity_error.formattedMessage.indexOf(importErrorKey) < 0 && solidity_error.severity !== 'warning';
-    });
-
-    // Should we try to throw more than one? (aside; we didn't before)
-    if (nonImportErrors.length > 0) {
-      throw new CompileError(nonImportErrors[0].formattedMessage);
-    }
 
     // Filter out our forced import, then get the import paths of the rest.
     const imports = errors

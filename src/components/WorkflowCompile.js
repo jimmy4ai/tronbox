@@ -39,7 +39,6 @@ const Contracts = {
   // strict: Boolean. Return compiler warnings as errors. Defaults to false.
   compile: function (options, callback) {
     const self = this;
-    const logger = options.logger || console;
 
     expect.options(options, ['contracts_build_directory']);
 
@@ -61,19 +60,24 @@ const Contracts = {
 
       if (contracts != null && Object.keys(contracts).length > 0) {
         self.write_contracts(contracts, config, async function (err, abstractions) {
-          callback(err, abstractions, paths);
-          logger.log(`> Compiled successfully using:`);
+          options.logger.log('');
+          options.logger.log(`> Compiled successfully using:`);
           const solcVersion = options.networks?.compilers
             ? options.networks?.compilers?.solc?.version
             : options.compilers?.solc?.version;
-          logger.log(`  - solc${options.evm ? '(EVM)' : ''}: ${solcVersion}`);
+          options.logger.log(`  - solc${options.evm ? '(EVM)' : ''}: ${solcVersion}`);
+          callback(err, abstractions, paths);
         });
       } else {
+        options.logger.log('> Everything is up to date, there is nothing to compile.');
         callback(null, [], paths);
       }
     }
 
     function start() {
+      options.logger.log('Compiling your contracts...');
+      options.logger.log('===========================');
+
       if (config.all === true || config.compileAll === true) {
         compile.all(config, finished);
       } else {
@@ -90,20 +94,17 @@ const Contracts = {
   },
 
   write_contracts: function (contracts, options, callback) {
-    const logger = options.logger || console;
-
     mkdirp(options.contracts_build_directory, function (err) {
       if (err != null) {
         callback(err);
         return;
       }
 
-      if (!options.quiet && !options.quietWrite) {
-        logger.log(
+      if (!options.quietWrite) {
+        options.logger.log(
           'Writing artifacts to .' +
             path.sep +
-            path.relative(options.working_directory, options.contracts_build_directory) +
-            OS.EOL
+            path.relative(options.working_directory, options.contracts_build_directory)
         );
       }
 

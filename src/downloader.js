@@ -19,19 +19,19 @@ async function downloader(compilerVersion, evm) {
         if (list.body.releases && list.body.releases[compilerVersion]) {
           soljsonUrl = `${solidityUrl}/${list.body.releases[compilerVersion]}`;
         } else {
-          console.info(
+          process.stderr.write(
             chalk.red(
               chalk.bold('Error:'),
               `Unable to locate Solidity compiler version ${chalk.yellow(compilerVersion)}.`
-            )
+            ) + '\n'
           );
 
-          process.exit();
+          process.exit(1);
         }
       }
     } catch (error) {
-      console.info(chalk.red(chalk.bold('Error:'), 'Failed to fetch Solidity compiler list.'));
-      process.exit();
+      process.stderr.write(chalk.red(chalk.bold('Error:'), 'Failed to fetch Solidity compiler list.') + '\n');
+      process.exit(1);
     }
   } else {
     try {
@@ -45,18 +45,18 @@ async function downloader(compilerVersion, evm) {
           }
         });
         if (!soljsonUrl) {
-          console.info(
+          process.stderr.write(
             chalk.red(
               chalk.bold('Error:'),
               `Unable to locate Solidity compiler version ${chalk.yellow(compilerVersion)}.`
-            )
+            ) + '\n'
           );
-          process.exit();
+          process.exit(1);
         }
       }
     } catch (error) {
-      console.info(chalk.red(chalk.bold('Error:'), 'Failed to fetch Solidity compiler list.'));
-      process.exit();
+      process.stderr.write(chalk.red(chalk.bold('Error:'), 'Failed to fetch Solidity compiler list.') + '\n');
+      process.exit(1);
     }
   }
 
@@ -67,20 +67,20 @@ async function downloader(compilerVersion, evm) {
       await fs.writeFile(soljsonPath, res.body);
       // double check
       if (!fs.existsSync(soljsonPath)) {
-        console.info(chalk.red(chalk.bold('Error:'), 'Permission required.'));
-        console.info(`
+        process.stderr.write(chalk.red(chalk.bold('Error:'), 'Permission required.') + '\n');
+        process.stderr.write(`
 Most likely, you installed Node.js as root.
 Please, download the compiler manually, running:
 
-tronbox --download-compiler ${compilerVersion} ${options.evm ? '--evm' : ''}
+tronbox --download-compiler ${compilerVersion} ${evm ? '--evm' : ''}
 `);
       } else {
-        console.info('Compiler downloaded.');
+        process.stdout.write('Compiler downloaded.\n');
       }
     }
   } catch (error) {
-    console.info(chalk.red(chalk.bold('Error:'), 'Wrong Solidity compiler version.'));
-    process.exit();
+    process.stderr.write(chalk.red(chalk.bold('Error:'), 'Wrong Solidity compiler version.') + '\n');
+    process.exit(1);
   }
 }
 

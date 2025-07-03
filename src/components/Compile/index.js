@@ -25,10 +25,6 @@ const compile = function (sources, options, callback) {
     options = {};
   }
 
-  if (!options.logger) {
-    options.logger = console;
-  }
-
   expect.options(options, ['contracts_directory', 'solc']);
 
   // Load solc module only when compilation is actually required.
@@ -115,7 +111,7 @@ const compile = function (sources, options, callback) {
       return error.severity !== 'warning';
     });
 
-    if (options.quiet !== true && warnings.length > 0) {
+    if (warnings.length > 0) {
       options.logger.log(OS.EOL + 'Compilation warnings encountered:' + OS.EOL);
       options.logger.log(
         warnings
@@ -301,12 +297,10 @@ compile.all = function (options, callback) {
 // quiet: Boolean. Suppress output. Defaults to false.
 // strict: Boolean. Return compiler warnings as errors. Defaults to false.
 compile.necessary = function (options, callback) {
-  options.logger = options.logger || console;
-
   Profiler.updated(options, function (err, updated) {
     if (err) return callback(err);
 
-    if (updated.length === 0 && options.quiet !== true) {
+    if (updated.length === 0) {
       return callback(null, [], {});
     }
 
@@ -316,7 +310,6 @@ compile.necessary = function (options, callback) {
 };
 
 compile.with_dependencies = function (options, callback) {
-  options.logger = options.logger || console;
   options.contracts_directory = options.contracts_directory || process.cwd();
 
   expect.options(options, ['paths', 'working_directory', 'contracts_directory', 'resolver']);
@@ -332,19 +325,15 @@ compile.with_dependencies = function (options, callback) {
     function (err, result) {
       if (err) return callback(err);
 
-      if (!options.quiet) {
-        options.logger.log('Compiling your contracts...');
-        options.logger.log('============================');
-        Object.keys(result)
-          .sort()
-          .forEach(function (import_path) {
-            let display_path = import_path;
-            if (path.isAbsolute(import_path)) {
-              display_path = '.' + path.sep + path.relative(options.working_directory, import_path);
-            }
-            options.logger.log('Compiling ' + display_path + '...');
-          });
-      }
+      Object.keys(result)
+        .sort()
+        .forEach(function (import_path) {
+          let display_path = import_path;
+          if (path.isAbsolute(import_path)) {
+            display_path = '.' + path.sep + path.relative(options.working_directory, import_path);
+          }
+          options.logger.log('Compiling ' + display_path + '...');
+        });
 
       compile(result, options, callback);
     }
