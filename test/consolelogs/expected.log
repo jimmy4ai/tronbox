@@ -1,7 +1,3 @@
-> Compiled successfully using:
-  - solc: 0.8.6
-Using network 'development'.
-
 === AddressAddress start ===
 log(address)
 T9yD14Nj9j7xAB4dbGeiX9h8upEsUFLPgY
