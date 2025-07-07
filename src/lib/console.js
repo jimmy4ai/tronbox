@@ -42,11 +42,7 @@ function Console(tasks, options) {
   }
 
   try {
-    this.tronWrap = TronWrap(options.networks[options.network], {
-      evm: options.evm,
-      verify: true,
-      log: options.log
-    });
+    this.tronWrap = TronWrap();
   } catch (err) {
     logErrorAndExit(console, err.message);
   }

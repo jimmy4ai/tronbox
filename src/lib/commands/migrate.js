@@ -60,6 +60,12 @@ Usage: $0 ${cmd} [--network <network>]
     const { dlog } = require('../../components/TronWrap');
     const logErrorAndExit = require('../../components/TronWrap').logErrorAndExit;
 
+    if (options.quiet || options.silent) {
+      options.logger = {
+        log: function () {}
+      };
+    }
+
     const config = Config.detect(options);
 
     // if "development" exists, default to using that
@@ -71,7 +77,7 @@ Usage: $0 ${cmd} [--network <network>]
       TronWrap(config.networks[config.network], {
         evm: options.evm,
         verify: true,
-        log: options.log
+        logger: options.logger
       });
     } catch (err) {
       logErrorAndExit(console, err.message);
@@ -95,19 +101,14 @@ Usage: $0 ${cmd} [--network <network>]
       }
     }
 
+    config.logger.log("Using network '" + config.network + "'." + OS.EOL);
+
     Contracts.compile(config, function (err) {
       if (err) return done(err);
       Environment.detect(config, function (err) {
         if (err) return done(err);
-        const dryRun = options.dryRun === true;
 
-        let networkMessage = "Using network '" + config.network + "'";
-
-        if (dryRun) {
-          networkMessage += ' (dry run)';
-        }
-
-        config.logger.log(networkMessage + '.' + OS.EOL);
+        config.logger.log();
         runMigrations(done);
       });
     });
