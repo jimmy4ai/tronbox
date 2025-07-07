@@ -93,6 +93,7 @@ const Test = {
       .then(function () {
         runner = new TestRunner(config);
 
+        console.info();
         console.info('Deploying contracts to development network...');
         return self.performInitialDeploy(config, test_resolver);
       })
@@ -173,7 +174,10 @@ const Test = {
         config.with({
           reset: true,
           resolver: resolver,
-          quiet: true
+          quiet: true,
+          logger: {
+            log: function () {}
+          }
         }),
         function (err) {
           if (err) return reject(err);
