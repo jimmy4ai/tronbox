@@ -85,10 +85,17 @@ Usage: $0 unbox [<name>] [--quiet]`
     const Config = require('../../components/Config');
     const Box = require('../../components/Box');
     const OS = require('os');
+    const chalk = require('chalk');
 
     const config = Config.default().with({
       logger: console
     });
+
+    if (options.quiet || options.silent) {
+      config.logger = {
+        log: function () {}
+      };
+    }
 
     const url = normalizeURL(options._[0]);
     Box.unbox(url, options.working_directory || config.working_directory, {
@@ -111,7 +118,13 @@ Usage: $0 unbox [<name>] [--quiet]`
 
         done();
       })
-      .catch(done);
+      .catch(err => {
+        if (err) {
+          console.error(chalk.red(chalk.bold('ERROR:'), err.message ? err.message : err));
+          process.exit(1);
+        }
+        done();
+      });
   }
 };
 
