@@ -72,7 +72,7 @@ Usage: $0 test [<files...>] [--file <file>]
         evm: options.evm,
         verify: true,
         tre: true,
-        log: options.log
+        logger: options.logger
       });
     } catch (err) {
       logErrorAndExit(console, err.message);
@@ -120,6 +120,8 @@ Usage: $0 test [<files...>] [--file <file>]
         }
 
         function run() {
+          config.logger.log("Using network '" + config.network + "'." + OS.EOL);
+
           // Set a new artifactor; don't rely on the one created by Environments.
           // TODO: Make the test artifactor configurable.
           config.artifactor = new Artifactor(temporaryDirectory);
@@ -143,8 +145,6 @@ Usage: $0 test [<files...>] [--file <file>]
 
             copy(config.contracts_build_directory, temporaryDirectory, function (err) {
               if (err) return done(err);
-
-              config.logger.log("Using network '" + config.network + "'." + OS.EOL);
 
               run();
             });
