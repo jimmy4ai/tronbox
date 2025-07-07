@@ -73,26 +73,25 @@ function init(options, extraOptions = {}) {
     return instance;
   }
 
-  if (
-    extraOptions.verify &&
-    (!options ||
-      !(options.privateKey || options.mnemonic) ||
-      !(options.fullHost || (options.fullNode && options.solidityNode && options.eventServer)))
-  ) {
+  if (extraOptions.verify) {
     const configFile = extraOptions.evm ? 'tronbox-evm-config.js' : 'tronbox.js';
+    const clientName = extraOptions.evm ? 'Web3' : 'TronWeb';
+
     if (!options) {
       throw new Error(
-        `It was not possible to instantiate TronWeb. The chosen network does not exist in your "${configFile}".`
+        `It was not possible to instantiate ${clientName}. The chosen network does not exist in your "${configFile}".`
       );
-    } else {
-      if (!options.privateKey) {
-        throw new Error(`It was not possible to instantiate TronWeb. Private key is missing in your "${configFile}".`);
-      }
-      if (!(options.fullHost || (options.fullNode && options.solidityNode && options.eventServer))) {
-        throw new Error(`It was not possible to instantiate TronWeb. Fullhost url is missing in your "${configFile}".`);
-      }
+    }
+
+    if (!(options.privateKey || options.mnemonic)) {
       throw new Error(
-        `It was not possible to instantiate TronWeb. Some required parameters are missing in your "${configFile}".`
+        `It was not possible to instantiate ${clientName}. The configuration key \`privateKey\` or \`mnemonic\` is missing in your "${configFile}".`
+      );
+    }
+
+    if (!(options.fullHost || (options.fullNode && options.solidityNode && options.eventServer))) {
+      throw new Error(
+        `It was not possible to instantiate ${clientName}. The configuration key \`fullHost\` is missing in your "${configFile}".`
       );
     }
   }
@@ -120,8 +119,8 @@ function init(options, extraOptions = {}) {
   tronWrap._nextId = 1;
 
   tronWrap.networkConfig = filterNetworkConfig(options);
-  if (extraOptions.log) {
-    tronWrap._log = extraOptions.log;
+  if (extraOptions.logger) {
+    tronWrap._log = extraOptions.logger;
   }
   if (extraOptions.evm) {
     const web3 = new Web3(options.fullNode || options.fullHost);
@@ -522,7 +521,7 @@ function init(options, extraOptions = {}) {
       'wallet/broadcasttransaction'
     ];
     if (urls.includes(url)) {
-      ConsoleLogger.getLogMessages(transaction);
+      ConsoleLogger.getLogMessages(transaction, extraOptions.logger);
     }
   };
 

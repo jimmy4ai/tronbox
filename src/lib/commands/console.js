@@ -45,7 +45,7 @@ Usage: $0 console [--network <network>] [--evm]`
       TronWrap(config.networks[config.network], {
         evm: options.evm,
         verify: true,
-        log: options.log
+        logger: options.logger
       });
     } catch (err) {
       logErrorAndExit(console, err.message);

@@ -5,7 +5,6 @@ const compile = require('./Compile');
 const expect = require('@truffle/expect');
 const Resolver = require('./Resolver');
 const Artifactor = require('./Artifactor');
-const OS = require('os');
 const TronWrap = require('./TronWrap');
 
 async function getCompilerVersion(options) {
@@ -20,7 +19,7 @@ async function getCompilerVersion(options) {
     tronWrap = TronWrap(config.networks[config.network], {
       evm: options.evm,
       verify: true,
-      log: options.log
+      logger: options.logger
     });
     const networkInfo = await tronWrap._getNetworkInfo();
     return Promise.resolve(networkInfo || {});

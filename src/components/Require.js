@@ -85,7 +85,12 @@ const Require = {
     process.chdir(path.dirname(file));
 
     const script = vm.createScript(source, file);
-    script.runInNewContext(context);
+    try {
+      script.runInNewContext(context);
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
 
     process.chdir(old_cwd);
 
