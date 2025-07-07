@@ -49,9 +49,9 @@ function verifyURL(url) {
       } else if (r.statusCode === 404) {
         return reject(
           new Error(
-            'tronbox Box at URL ' +
+            'TronBox Box at URL ' +
               url +
-              " doesn't exist. If you believe this is an error, please contact tronbox support."
+              " doesn't exist. If you believe this is an error, please contact TronBox support."
           )
         );
       } else if (r.statusCode !== 200) {

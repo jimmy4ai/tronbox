@@ -36,7 +36,7 @@ Usage: $0 init`
       config.logger.log(
         ' - For an empty project, use `tronbox init` with no arguments' +
           OS.EOL +
-          ' - Or, browse the tronbox Boxes at <https://github.com/tronsuper>!'
+          ' - Or, browse the TronBox Boxes at <https://github.com/tronsuper>!'
       );
       process.exit(1);
     }
