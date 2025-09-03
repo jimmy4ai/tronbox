@@ -5,11 +5,12 @@ const contract = require('../components/Contract');
 const TronWrap = require('../components/TronWrap');
 const vm = require('vm');
 const expect = require('@truffle/expect');
-const TruffleError = require('@truffle/error');
 const fs = require('fs');
 const path = require('path');
+const { spawn } = require('child_process');
 const EventEmitter = require('events');
 const inherits = require('util').inherits;
+const chalk = require('chalk');
 const logErrorAndExit = require('../components/TronWrap').logErrorAndExit;
 
 inherits(Console, EventEmitter);
@@ -165,25 +166,74 @@ Console.prototype.interpret = function (cmd, context, filename, callback) {
       return callback();
     }
 
-    return self.command.run(cmd, this.options, function (err) {
-      if (err) {
-        // Perform error handling ourselves.
-        if (err instanceof TruffleError) {
-          console.error(err.message);
-        } else {
-          // Bubble up all other unexpected errors.
-          console.error(err.stack || err.toString());
+    const excludeKeys = ['_', '$0', 'f', 'evm', 'network'];
+    const args = [cmdRes.name];
+    Object.keys(cmdRes.argv)
+      .filter(key => !excludeKeys.includes(key))
+      .forEach(key => {
+        const value = cmdRes.argv[key];
+        let arg = value;
+        if (Array.isArray(value)) {
+          arg = value[value.length - 1];
         }
-        return callback();
-      }
-
-      // Reprovision after each command as it may change contracts.
-      self.provision(function (err) {
-        // Don't pass abstractions to the callback if they're there or else
-        // they'll get printed in the repl.
-        callback(err);
+        args.push(`--${key}`);
+        if (value !== true) args.push(`${arg}`);
       });
-    });
+    args.push('--network');
+    args.push(`${this.options.network}`);
+    if (this.options.evm) args.push('--evm');
+
+    let errMsg = '';
+    if (cmdRes.argv.evm && !this.options.evm) {
+      errMsg = `The command was run with --evm, but the current REPL is not in EVM mode. Please restart the console with --evm if needed.`;
+    }
+    if (cmdRes.argv.network && cmdRes.argv.network !== this.options.network) {
+      errMsg = `The command was run with --network=${cmdRes.argv.network}, but the current REPL is using --network=${this.options.network}. Please restart the console with the correct network if needed.`;
+    }
+
+    if (errMsg) {
+      console.error(chalk.red(chalk.bold('ERROR:'), errMsg));
+      return callback();
+    }
+
+    try {
+      const spawnedProcess = spawn(cmdRes.argv['$0'], args, {
+        env: { ...process.env, FORCE_COLOR: '1' },
+        encoding: 'utf8'
+      });
+
+      let bufferedError = '';
+      spawnedProcess.stderr.on('data', data => {
+        bufferedError += data.toString();
+      });
+
+      spawnedProcess.stdout.on('data', data => {
+        process.stdout.write(data.toString());
+      });
+
+      return new Promise((resolve, reject) => {
+        spawnedProcess.on('close', code => {
+          if (bufferedError) {
+            console.error(bufferedError);
+          }
+
+          if (!code) {
+            // Reprovision after each command as it may change contracts.
+            self.provision(function (err) {
+              // Don't pass abstractions to the callback if they're there or else
+              // they'll get printed in the repl.
+              callback(err);
+              resolve();
+            });
+            return;
+          }
+          callback(code);
+          reject(code);
+        });
+      });
+    } catch (error) {
+      return callback(error);
+    }
   }
 
   let result;
