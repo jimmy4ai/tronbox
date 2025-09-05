@@ -1,5 +1,5 @@
 const version = require('../version');
-const describe = 'Run JavaScript and Solidity tests';
+const describe = 'Run contract tests written in JavaScript';
 
 const command = {
   command: 'test',
