@@ -6,22 +6,24 @@
 
 # TronBox
 
-TronBox is a tool for developing, testing, and deploying smart contracts. It is designed for blockchains using the TRON Virtual Machine (TVM).
+TronBox is a development framework and testing environment for smart contracts on blockchains using the TRON Virtual Machine (TVM). As a fork of [Truffle](https://www.trufflesuite.com/truffle), TronBox brings familiar workflows and powerful tools to the TRON ecosystem, making it easier to build, test, and deploy decentralized applications.
+
+With TronBox, you get:
 
 - Built-in smart contract compilation, linking, deployment, and binary management.
-- External script runner that executes scripts within a TronBox environment.
-- Interactive console for direct contract communication.
+- An external script runner that executes scripts within a TronBox environment.
+- An interactive console for direct contract communication.
 - Automated contract testing for rapid development.
-- Scriptable, extensible deployment & migrations framework.
+- A scriptable, extensible deployment & migrations framework.
 - Network management for deploying to any number of public & private networks.
 
-TronBox is a fork of [Truffle](https://www.trufflesuite.com/truffle).
+Whether you are migrating from Truffle or starting a new TRON project, TronBox provides a seamless and productive development experience.
 
 ## Quick Start
 
 ### Install
 
-Before you can use TronBox, install it using the npm command. For details, see [Install TronBox](https://developers.tron.network/reference/install).
+Before you can use TronBox, install it using the npm command. For details, see [Install TronBox](https://tronbox.io/docs/guides/installation).
 
 ```
 $ npm install -g tronbox
@@ -45,7 +47,7 @@ Once this operation is completed, you'll now have a project structure with the f
 
 `tronbox.js`: TronBox configuration file
 
-For those getting started, you can use TronBox Boxes, which offers example applications and project templates. For details, see [Create a TronBox Project](https://developers.tron.network/reference/create-a-tronbox-project).
+For those getting started, you can use TronBox Boxes, which offers example applications and project templates. For details, see [Create a TronBox Project](https://tronbox.io/docs/guides/create-a-box).
 
 ### Compile
 
@@ -57,11 +59,11 @@ $ tronbox compile
 
 To compile all contracts, use the `--compile-all` option.
 
-Specify a network using the `--network` option. Network name must exist in the configuration. For details, see [Compile a Project](https://developers.tron.network/reference/compile-a-contract).
+Specify a network using the `--network` option. Network name must exist in the configuration. For details, see [Compile a Project](https://tronbox.io/docs/guides/compile-contracts).
 
 ### Migrate
 
-To deploy our smart contracts, you need to connect to a blockchain. Use the **TronBox Runtime Environment** to create and interact with the blockchain. For details, see [Contract Deployment (Migrations)](https://developers.tron.network/reference/contract-deploymentmigrations).
+To deploy our smart contracts, you need to connect to a blockchain. Use the **TronBox Runtime Environment** to create and interact with the blockchain. For details, see [Contract Deployment (Migrations)](https://tronbox.io/docs/guides/deploy-contracts).
 
 To run your migrations, run the following:
 
@@ -77,7 +79,7 @@ To run all tests, run:
 $ tronbox test
 ```
 
-Alternatively, you can specify a path to a specific file you want to run: `tronbox test ./path/to/test/file.js`. For details, see [Test Your Contracts](https://developers.tron.network/reference/test-your-contracts).
+Alternatively, you can specify a path to a specific file you want to run: `tronbox test ./path/to/test/file.js`. For details, see [Test Your Contracts](https://tronbox.io/docs/guides/test-contracts).
 
 ### Interact with the contract
 
@@ -93,7 +95,7 @@ You will see the following prompt:
 $ tronbox(development)>
 ```
 
-The name in the parentheses of the prompt `tronbox(development)>` is the network that is currently connected to. For details, see [Interact with a Contract](https://developers.tron.network/reference/interact-with-a-contract).
+The name in the parentheses of the prompt `tronbox(development)>` is the network that is currently connected to. For details, see [Interact with a Contract](https://tronbox.io/docs/guides/interact-with-contracts).
 
 # Integrity Check
 
@@ -106,6 +108,6 @@ uid: dev@tronbox.io
 
 ## Development
 
-To dive deeper into advanced topics of the TronBox project lifecycle, please see the [Official TronBox Documentation](https://developers.tron.network/reference/what-is-tronbox) for guides, tips, and examples.
+To dive deeper into advanced topics of the TronBox project lifecycle, please see the [Official TronBox Documentation](https://tronbox.io/docs/) for guides, tips, and examples.
 
 To contribute, see [CONTRIUTING.MD](https://github.com/tronprotocol/tronbox/blob/master/CONTRIBUTING.md).

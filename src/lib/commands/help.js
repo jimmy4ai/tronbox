@@ -18,7 +18,7 @@ const command = {
 
 Usage: tronbox <command> [options]`
       )
-      .epilog('See more at https://developers.tron.network/docs/tronbox')
+      .epilog('See more at https://tronbox.io/docs/')
       .showHelp();
 
     done();
