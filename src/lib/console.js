@@ -161,13 +161,21 @@ Console.prototype.interpret = function (cmd, context, filename, callback) {
 
   const cmdRes = this.command.getCommand(cmd, this.options.noAliases);
   if (cmdRes != null) {
-    if (cmdRes.name !== 'help' && cmdRes.argv.help) {
+    if (cmdRes.name === 'help') {
+      return self.command.run(cmd, this.options, function (err) {
+        if (err) {
+          console.error(err.message ? err.message : err);
+        }
+        callback();
+      });
+    }
+    if (cmdRes.argv.help) {
       this.command.args.parse(cmd);
       return callback();
     }
 
     const excludeKeys = ['_', '$0', 'f', 'evm', 'network'];
-    const args = [cmdRes.name];
+    const args = [...cmdRes.argv._];
     Object.keys(cmdRes.argv)
       .filter(key => !excludeKeys.includes(key))
       .forEach(key => {
@@ -211,29 +219,28 @@ Console.prototype.interpret = function (cmd, context, filename, callback) {
         process.stdout.write(data.toString());
       });
 
-      return new Promise((resolve, reject) => {
-        spawnedProcess.on('close', code => {
-          if (bufferedError) {
-            console.error(bufferedError);
-          }
+      spawnedProcess.on('close', code => {
+        if (bufferedError) {
+          console.error(bufferedError);
+        }
 
-          if (!code) {
-            // Reprovision after each command as it may change contracts.
-            self.provision(function (err) {
-              // Don't pass abstractions to the callback if they're there or else
-              // they'll get printed in the repl.
-              callback(err);
-              resolve();
-            });
-            return;
-          }
-          callback(code);
-          reject(code);
-        });
+        if (!code) {
+          // Reprovision after each command as it may change contracts.
+          self.provision(function (err) {
+            // Don't pass abstractions to the callback if they're there or else
+            // they'll get printed in the repl.
+            callback(err);
+          });
+          return;
+        }
+        callback();
       });
     } catch (error) {
-      return callback(error);
+      console.error(chalk.red(chalk.bold('ERROR:'), error && error.message ? error.message : error));
+      callback();
     }
+
+    return;
   }
 
   let result;
