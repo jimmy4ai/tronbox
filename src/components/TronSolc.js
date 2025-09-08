@@ -6,7 +6,7 @@ const homedir = require('homedir');
 const wrapper = require('solc/wrapper');
 let { name, version } = require('../../package');
 
-const maxVersion = '0.8.24';
+const maxVersion = '0.8.25';
 
 function compareVersions(version1, version2) {
   const v1Parts = version1.split('.').map(Number);
