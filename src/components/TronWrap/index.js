@@ -74,7 +74,7 @@ function init(options, extraOptions = {}) {
   }
 
   if (extraOptions.verify) {
-    const configFile = extraOptions.evm ? 'tronbox-evm-config.js' : 'tronbox.js';
+    const configFile = extraOptions.evm ? 'tronbox-evm-config.js' : 'tronbox-config.js';
     const clientName = extraOptions.evm ? 'Web3' : 'TronWeb';
 
     if (!options) {
@@ -701,7 +701,7 @@ const logErrorAndExit = (logger, err) => {
   if (msg) {
     msg = msg.replace(/^error(:|) /i, '');
     if (msg === 'Invalid URL provided to HttpProvider') {
-      msg = 'Either invalid or wrong URL provided to HttpProvider. Verify the configuration in your "tronbox.js"';
+      msg = 'Either invalid or wrong URL provided to HttpProvider. Verify the node URLs in your project configuration.';
     }
     log(chalk.red(chalk.bold('ERROR:'), msg));
   } else {

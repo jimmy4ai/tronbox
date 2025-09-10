@@ -63,7 +63,9 @@ Usage: $0 test [<files...>] [--file <file>]
     }
 
     if (!config.network) {
-      console.error('\nERROR: Neither development nor test network has been set in tronbox.js\n');
+      console.error(
+        '\nERROR: Neither development nor test network has been set. Please configure a network in your project configuration.\n'
+      );
       return;
     }
 
@@ -154,7 +156,7 @@ Usage: $0 test [<files...>] [--file <file>]
         if (config.networks[config.network]) {
           Environment.detect(config, environmentCallback);
         } else {
-          throw new Error('No development/test environment set in tronbox.js');
+          throw new Error('No development or test environment is configured in your project configuration.');
 
           // var ipcOptions = {
           //   network: "test"
