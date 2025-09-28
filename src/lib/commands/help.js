@@ -6,7 +6,7 @@ const command = {
   describe: 'Show general help and list all available commands',
   builder: {},
   run: function (options, done) {
-    const args = yargs().exitProcess(false).version(false).help(false);
+    const args = yargs().detectLocale(false).exitProcess(false).version(false).help(false);
 
     Object.keys(options.commands).forEach(function (command) {
       args.command(options.commands[command]);

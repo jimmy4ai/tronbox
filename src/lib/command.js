@@ -6,7 +6,7 @@ const version = require('./version');
 function Command(commands) {
   this.commands = commands;
 
-  const args = yargs().exitProcess(false);
+  const args = yargs().detectLocale(false).exitProcess(false);
 
   Object.keys(this.commands).forEach(command => {
     args.command(this.commands[command]);
@@ -16,7 +16,7 @@ function Command(commands) {
 }
 
 Command.prototype.getCommand = function (cmds, noAliases) {
-  const args = yargs().exitProcess(false).version(false).help(false);
+  const args = yargs().detectLocale(false).exitProcess(false).version(false).help(false);
 
   Object.keys(this.commands).forEach(command => {
     args.command(this.commands[command]);
