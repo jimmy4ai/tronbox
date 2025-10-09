@@ -45,7 +45,7 @@ Once this operation is completed, you'll now have a project structure with the f
 
 `test/`: Directory for test files for testing your application and contracts
 
-`tronbox.js`: TronBox configuration file
+`tronbox-config.js`: TronBox configuration file
 
 For those getting started, you can use TronBox Boxes, which offers example applications and project templates. For details, see [Create a TronBox Project](https://tronbox.io/docs/guides/create-a-box).
 
