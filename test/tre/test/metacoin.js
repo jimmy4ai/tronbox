@@ -1,4 +1,3 @@
-const wait = require('./helpers/wait');
 const chalk = require('chalk');
 const MetaCoin = artifacts.require('./MetaCoin.sol');
 

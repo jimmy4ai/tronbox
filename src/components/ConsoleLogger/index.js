@@ -391,7 +391,9 @@ const ConsoleLogger = {
     }
     return false;
   },
-  getLogMessages: function (transaction) {
+  getLogMessages: function (transaction, logger) {
+    if (process.env.TRONBOX_SOLIDITY_CONSOLE_LOG !== undefined) logger = console;
+
     if (!transaction) return;
     const { internal_transactions } = transaction;
     if (!internal_transactions) return;
@@ -403,7 +405,7 @@ const ConsoleLogger = {
         const output = `0x${data}`;
         const types = this.getLogTypes(output.slice(0, 10));
         if (!types) return;
-        if (!types[0]) return console.info();
+        if (!types[0]) return logger.log();
 
         const decode = utils.abi.decodeParams([], types, output, true);
         types.forEach((_, i) => {
@@ -417,7 +419,7 @@ const ConsoleLogger = {
               break;
           }
         });
-        console.info(...decode);
+        logger.log(...decode);
       }
     });
   }

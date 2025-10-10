@@ -6,7 +6,7 @@ const homedir = require('homedir');
 const wrapper = require('solc/wrapper');
 let { name, version } = require('../../package');
 
-const maxVersion = '0.8.24';
+const maxVersion = '0.8.25';
 
 function compareVersions(version1, version2) {
   const v1Parts = version1.split('.').map(Number);
@@ -44,7 +44,7 @@ function getWrapper(options = {}) {
       }
 
       if (compareVersions(compilerVersion, maxVersion) > 0 && !options.evm) {
-        console.info(`${chalk.red(
+        console.error(`${chalk.red(
           chalk.bold('Error:')
         )} TronBox v${version} currently supports Tron Solidity compiler versions up to ${chalk.green(maxVersion)}.
 You are using version ${chalk.yellow(compilerVersion)}, which is not supported.`);
@@ -63,13 +63,19 @@ You are using version ${chalk.yellow(compilerVersion)}, which is not supported.`
       name = process.env.TRONBOX_NAME;
     }
 
-    console.info(`Fetching ${options.evm ? 'Ethereum' : 'Tron'} Solidity compiler version ${compilerVersion}...`);
-    const output = execSync(`${name} --download-compiler ${compilerVersion} ${options.evm ? '--evm' : ''}`, {
-      env: { ...process.env, FORCE_COLOR: '1' }
-    }).toString();
-    console.info(output);
-    if (output.indexOf('Error:') !== -1) {
-      process.exit();
+    options.logger.log(`Fetching ${options.evm ? 'Ethereum' : 'Tron'} Solidity compiler version ${compilerVersion}...`);
+    try {
+      const result = execSync(`${name} --download-compiler ${compilerVersion} ${options.evm ? '--evm' : ''}`, {
+        env: { ...process.env, FORCE_COLOR: '1' },
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+
+      options.logger.log(result);
+    } catch (error) {
+      const errorOutput = error.stderr || error.stdout || error.message;
+      console.error(errorOutput.trimEnd());
+      process.exit(1);
     }
   }
   const soljson = eval('require')(soljsonPath);

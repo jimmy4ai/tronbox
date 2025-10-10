@@ -3,7 +3,7 @@ const Tuple = artifacts.require('./Tuple.sol');
 
 // The following tests require TronBox >= 2.1.x
 
-contract('Tuple', function (accounts) {
+contract('Tuple', function () {
   let tuple;
 
   function turnBN2N(values) {

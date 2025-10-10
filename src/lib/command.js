@@ -1,24 +1,31 @@
 const TaskError = require('./errors/taskerror');
 const yargs = require('yargs/yargs');
 const _ = require('lodash');
+const version = require('./version');
 
 function Command(commands) {
   this.commands = commands;
 
-  let args = yargs();
+  const args = yargs().detectLocale(false).exitProcess(false);
 
-  Object.keys(this.commands).forEach(function (command) {
-    args = args.command(commands[command]);
+  Object.keys(this.commands).forEach(command => {
+    args.command(this.commands[command]);
   });
 
   this.args = args;
 }
 
-Command.prototype.getCommand = function (str, noAliases) {
-  const argv = this.args.parse(str);
+Command.prototype.getCommand = function (cmds, noAliases) {
+  const args = yargs().detectLocale(false).exitProcess(false).version(false).help(false);
+
+  Object.keys(this.commands).forEach(command => {
+    args.command(this.commands[command]);
+  });
+
+  const argv = args.parse(cmds);
 
   if (argv._.length === 0) {
-    return null;
+    argv._.push('help');
   }
 
   const input = argv._[0];
@@ -72,7 +79,15 @@ Command.prototype.run = function (command, options, callback) {
   const result = this.getCommand(command, typeof options.noAliases === 'boolean' ? options.noAliases : true);
 
   if (!result) {
-    return callback(new TaskError('Cannot find command: ' + command));
+    return callback(
+      new TaskError(
+        `\`tronbox ${command[0]}\` is an invalid command.
+
+Please use \`tronbox help\` to see a list of available commands.
+
+TronBox v${version.bundle}`
+      )
+    );
   }
 
   const argv = result.argv;
@@ -96,6 +111,12 @@ Command.prototype.run = function (command, options, callback) {
   });
 
   options = _.extend(clone, argv);
+  options.commands = this.commands;
+
+  if (result.name !== 'help' && argv.help) {
+    this.args.parse(command);
+    return callback();
+  }
 
   try {
     result.command.run(options, callback);

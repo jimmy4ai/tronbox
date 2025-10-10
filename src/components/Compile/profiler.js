@@ -8,6 +8,7 @@ const Graph = require('graphlib').Graph;
 const Parser = require('./parser');
 const expect = require('@truffle/expect');
 const find_contracts = require('@truffle/contract-sources');
+const CompileError = require('./compileerror');
 
 module.exports = {
   updated: function (options, callback) {
@@ -223,7 +224,7 @@ module.exports = {
       if (err) return callback(err);
 
       // Include paths for Solidity .sols, specified in options.
-      allPaths = allPaths.concat(paths);
+      allPaths = [...new Set([...allPaths, ...paths])];
 
       self.dependency_graph(allPaths, options.resolver, function (err, dependsGraph) {
         if (err) return callback(err);
@@ -289,14 +290,7 @@ module.exports = {
           // Add the contract to the depends graph.
           dependsGraph.setNode(resolved_path, resolved_body);
 
-          let imports;
-
-          try {
-            imports = Parser.parseImports(resolved_body, resolver.options);
-          } catch (e) {
-            e.message = 'Error parsing ' + import_path + ': ' + e.message;
-            return finished(e);
-          }
+          let imports = Parser.parseImports(resolved_body, resolver.options);
 
           // Convert explicitly relative dependencies of modules
           // back into module paths. We also use this loop to update
@@ -324,7 +318,7 @@ module.exports = {
         });
       },
       function (err) {
-        if (err) return callback(err);
+        if (err) return callback(new CompileError(err.message));
         callback(null, dependsGraph);
       }
     );

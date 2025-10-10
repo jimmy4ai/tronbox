@@ -33,6 +33,15 @@ module.exports = [
         {
           allowModules: ['eslint-plugin-n', 'globals']
         }
+      ],
+      'no-unused-vars': [
+        'error',
+        {
+          args: 'after-used',
+          ignoreRestSiblings: true,
+          argsIgnorePattern: '^_',
+          caughtErrors: 'none'
+        }
       ]
     }
   },
