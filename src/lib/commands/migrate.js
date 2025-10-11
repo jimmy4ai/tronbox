@@ -1,29 +1,53 @@
+const version = require('../version');
+const describe = 'Run migrations to deploy contracts';
+
 const command = {
   command: 'migrate',
-  description: 'Run migrations to deploy contracts',
-  builder: {
-    reset: {
-      type: 'boolean',
-      default: false
-    },
-    'compile-all': {
-      describe: 'recompile all contracts',
-      type: 'boolean',
-      default: false
-    },
-    // "dry-run": {
-    //   describe: "Run migrations against an in-memory fork, for testing",
-    //   type: "boolean",
-    //   default: false
-    // },
-    f: {
-      describe: 'Specify a migration number to run from',
-      type: 'number'
-    },
-    to: {
-      describe: 'Specify a migration number to run to',
-      type: 'number'
-    }
+  describe,
+  builder: (yargs, cmd = 'migrate') => {
+    yargs
+      .usage(
+        `TronBox v${version.bundle}\n\n${describe}\n
+Usage: $0 ${cmd} [--network <network>]
+               ${' '.repeat(cmd.length)} [--reset] [--from <number>] [--to <number>]
+               ${' '.repeat(cmd.length)} [--compile-all] [--evm] [--quiet]`
+      )
+      .version(false)
+      .options({
+        network: {
+          describe: 'Network name in configuration',
+          type: 'string'
+        },
+        reset: {
+          describe: 'Re-run all migrations',
+          type: 'boolean'
+        },
+        from: {
+          alias: 'f',
+          describe: 'Specify a migration number to run from',
+          type: 'number'
+        },
+        to: {
+          describe: 'Specify a migration number to run to',
+          type: 'number'
+        },
+        'compile-all': {
+          describe: 'Recompile all contracts',
+          type: 'boolean'
+        },
+        evm: {
+          describe: 'Use EVM configuration',
+          type: 'boolean'
+        },
+        quiet: {
+          describe: 'Suppress all output except errors',
+          type: 'boolean'
+        }
+      })
+      .example(`$0 ${cmd}`, 'Run all migrations on the development network')
+      .example(`$0 ${cmd} --network nile`, 'Run migrations on the nile network')
+      .example(`$0 ${cmd} --reset`, 'Re-run all migrations')
+      .group(['network', 'reset', 'from', 'to', 'compile-all', 'evm', 'quiet', 'help'], 'Options:');
   },
   run: function (options, done) {
     process.env.CURRENT = 'migrate';
@@ -36,6 +60,12 @@ const command = {
     const { dlog } = require('../../components/TronWrap');
     const logErrorAndExit = require('../../components/TronWrap').logErrorAndExit;
 
+    if (options.quiet || options.silent) {
+      options.logger = {
+        log: function () {}
+      };
+    }
+
     const config = Config.detect(options);
 
     // if "development" exists, default to using that
@@ -47,7 +77,7 @@ const command = {
       TronWrap(config.networks[config.network], {
         evm: options.evm,
         verify: true,
-        log: options.log
+        logger: options.logger
       });
     } catch (err) {
       logErrorAndExit(console, err.message);
@@ -71,19 +101,14 @@ const command = {
       }
     }
 
+    config.logger.log("Using network '" + config.network + "'." + OS.EOL);
+
     Contracts.compile(config, function (err) {
       if (err) return done(err);
       Environment.detect(config, function (err) {
         if (err) return done(err);
-        const dryRun = options.dryRun === true;
 
-        let networkMessage = "Using network '" + config.network + "'";
-
-        if (dryRun) {
-          networkMessage += ' (dry run)';
-        }
-
-        config.logger.log(networkMessage + '.' + OS.EOL);
+        config.logger.log();
         runMigrations(done);
       });
     });

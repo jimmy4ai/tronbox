@@ -1,7 +1,18 @@
+const version = require('../version');
+const describe = 'Initialize new TronBox project';
+
 const command = {
   command: 'init',
-  description: 'Initialize new and empty tronBox project',
-  builder: {},
+  describe,
+  builder: yargs => {
+    yargs
+      .usage(
+        `TronBox v${version.bundle}\n\n${describe}\n
+Usage: $0 init`
+      )
+      .version(false)
+      .group(['help'], 'Options:');
+  },
   run: function (options, done) {
     const fs = require('fs');
     const path = require('path');
@@ -25,7 +36,7 @@ const command = {
       config.logger.log(
         ' - For an empty project, use `tronbox init` with no arguments' +
           OS.EOL +
-          ' - Or, browse the tronbox Boxes at <https://github.com/tronsuper>!'
+          ' - Or, browse the TronBox Boxes at <https://github.com/tronsuper>!'
       );
       process.exit(1);
     }

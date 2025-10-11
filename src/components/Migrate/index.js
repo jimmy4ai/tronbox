@@ -24,7 +24,7 @@ Migration.prototype.run = function (options, callback) {
 
   const resolver = new ResolverIntercept(options.resolver);
 
-  tronWrap = TronWrap(options);
+  tronWrap = TronWrap();
   // Initial context.
   const context = {
     tronWrap: tronWrap,
@@ -203,12 +203,6 @@ const Migrate = {
     Object.keys(options).forEach(function (key) {
       clone[key] = options[key];
     });
-
-    if (options.quiet) {
-      clone.logger = {
-        log: function () {}
-      };
-    }
 
     clone.provider = this.wrapProvider(options.provider, clone.logger);
     clone.resolver = this.wrapResolver(options.resolver, clone.provider);

@@ -3,7 +3,9 @@ const migrate = require('./migrate');
 const command = {
   command: 'deploy',
   description: '(alias for migrate)',
-  builder: migrate.builder,
+  builder: yargs => {
+    migrate.builder(yargs, 'deploy');
+  },
   run: migrate.run
 };
 

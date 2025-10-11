@@ -75,7 +75,7 @@ tronbox test --network <mainnet|shasta|nile|development>
 
 TronBox supports deploying contracts on EVM-compatible blockchains.
 
-For more information, please refer to: https://developers.tron.network/reference/work-with-evm
+For more information, please refer to: https://tronbox.io/docs/guides/work-with-evm
 
 ## Additional Resources
 

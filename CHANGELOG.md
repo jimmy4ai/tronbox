@@ -1,3 +1,12 @@
+**4.4.0**
+
+- Added support for Tron Solidity compiler `0.8.25`
+- Removed the `build`, `serve`, and `watch` CLI commands
+- Added a dedicated `help` command with clear usage information for each subcommand and parameter
+- Refactored core commands (`compile`, `console`, `migrate`, `test`, etc.) to include descriptions, parameter documentation, usage examples, and enhanced logging and error handling
+- Ran each REPL subcommand in its own child process and streamed stdout/stderr as received
+- Updated documentation links to https://tronbox.io/docs
+
 **4.3.0**
 
 - Add MetaCoin project template for tronbox init

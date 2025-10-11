@@ -1,6 +1,7 @@
 const EPMSource = require('./epm');
 const NPMSource = require('./npm');
 const FSSource = require('./fs');
+const path = require('path');
 const whilst = require('async/whilst');
 const contract = require('../Contract');
 const expect = require('@truffle/expect');
@@ -68,10 +69,11 @@ Resolver.prototype.resolve = function (import_path, imported_from, callback) {
       if (err) return callback(err);
 
       if (!resolved_body) {
-        let message = 'Could not find ' + import_path + ' from any sources';
+        let message =
+          'Could not find ' + path.relative(self.options.working_directory, import_path) + ' from any sources';
 
         if (imported_from) {
-          message += '; imported from ' + imported_from;
+          message += '; imported from ' + path.relative(self.options.working_directory, imported_from);
         }
 
         return callback(new Error(message));
