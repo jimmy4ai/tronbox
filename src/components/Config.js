@@ -11,13 +11,12 @@ const DEFAULT_CONFIG_FILENAME = 'tronbox.js';
 const BACKUP_CONFIG_FILENAME = 'tronbox-config.js'; // For Windows + Command Prompt
 const EVM_CONFIG_FILENAME = 'tronbox-evm-config.js'; // For EVM
 
-function Config(truffle_directory, working_directory, network) {
+function Config() {
   const self = this;
   const default_tx_values = constants.deployParameters;
   this._values = {
-    truffle_directory: truffle_directory || path.resolve(path.join(__dirname, '../')),
-    working_directory: working_directory || process.cwd(),
-    network: network,
+    working_directory: process.cwd(),
+    network: 'development',
     networks: {},
     verboseRpc: false,
     privateKey: null,
@@ -35,12 +34,6 @@ function Config(truffle_directory, working_directory, network) {
     build: null,
     resolver: null,
     artifactor: null,
-    ethpm: {
-      ipfs_host: 'ipfs.infura.io',
-      ipfs_protocol: 'https',
-      registry: '0x8011df4830b4f696cd81393997e5371b93338878',
-      install_provider_uri: 'https://ropsten.infura.io/truffle'
-    },
     solc: {},
     logger: {
       log: function () {}
@@ -49,7 +42,6 @@ function Config(truffle_directory, working_directory, network) {
 
   const props = {
     // These are already set.
-    truffle_directory: function () {},
     working_directory: function () {},
     network: function () {},
     networks: function () {},
@@ -57,30 +49,51 @@ function Config(truffle_directory, working_directory, network) {
     build: function () {},
     resolver: function () {},
     artifactor: function () {},
-    ethpm: function () {},
     solc: function () {},
     logger: function () {},
 
-    build_directory: function () {
-      return path.join(self.working_directory, 'build');
+    build_directory: {
+      default: function () {
+        return path.join(self.working_directory, 'build');
+      },
+      transform: function (value) {
+        return path.resolve(self.working_directory, value);
+      }
     },
-    contracts_directory: function () {
-      return path.join(self.working_directory, 'contracts');
+    contracts_directory: {
+      default: function () {
+        return path.join(self.working_directory, 'contracts');
+      },
+      transform: function (value) {
+        return path.resolve(self.working_directory, value);
+      }
     },
-    contracts_build_directory: function () {
-      return path.join(self.build_directory, 'contracts');
+    contracts_build_directory: {
+      default: function () {
+        return path.join(self.build_directory, 'contracts');
+      },
+      transform: function (value) {
+        return path.resolve(self.working_directory, value);
+      }
     },
-    migrations_directory: function () {
-      return path.join(self.working_directory, 'migrations');
+    migrations_directory: {
+      default: function () {
+        return path.join(self.working_directory, 'migrations');
+      },
+      transform: function (value) {
+        return path.resolve(self.working_directory, value);
+      }
     },
-    test_directory: function () {
-      return path.join(self.working_directory, 'test');
+    test_directory: {
+      default: function () {
+        return path.join(self.working_directory, 'test');
+      },
+      transform: function (value) {
+        return path.resolve(self.working_directory, value);
+      }
     },
     test_file_extension_regexp: function () {
       return /.*\.(js|es|es6|jsx|sol)$/;
-    },
-    example_project_directory: function () {
-      return path.join(self.truffle_directory, 'example');
     },
     network_id: {
       get: function () {
@@ -318,12 +331,14 @@ Config.prototype.addProp = function (key, obj) {
     get:
       obj.get ||
       function () {
-        return this._values[key] || obj();
+        if (this._values[key]) return this._values[key];
+        if (obj.default) return obj.default();
+        return obj();
       },
     set:
       obj.set ||
       function (val) {
-        this._values[key] = val;
+        this._values[key] = obj.transform ? obj.transform(val) : val;
       },
     configurable: true,
     enumerable: true
