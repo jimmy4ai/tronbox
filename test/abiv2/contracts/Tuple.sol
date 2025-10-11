@@ -16,8 +16,9 @@ contract Tuple {
     persons.push(Person('Oscar', 30));
   }
 
-  function insert(Person memory person) public {
+  function insert(Person memory person) public returns (Person memory) {
     persons.push(person);
+    return person;
   }
 
   function insertBatch(Person[] memory person) public {
