@@ -261,7 +261,8 @@ function init(options, extraOptions = {}) {
         parameters: option.parameters,
         rawParameter: option.rawParameter,
         name: option.contractName,
-        from: option.from || ''
+        from: option.from || '',
+        blockHeader: option.blockHeader
       },
       option.privateKey
     )
