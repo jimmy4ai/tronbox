@@ -2,7 +2,7 @@ const Deployed = require('./deployed');
 const path = require('path');
 const fs = require('fs');
 const contract = require('../../components/Contract');
-const find_contracts = require('@truffle/contract-sources');
+const { findContracts } = require('../utils');
 
 function TestSource(config) {
   this.config = config;
@@ -16,7 +16,7 @@ TestSource.prototype.resolve = function (import_path, callback) {
   const self = this;
 
   if (import_path === 'truffle/DeployedAddresses.sol') {
-    return find_contracts(this.config.contracts_directory, function (err, source_files) {
+    return findContracts(this.config.contracts_directory, function (err, source_files) {
       // Ignore this error. Continue on.
 
       fs.readdir(self.config.contracts_build_directory, function (err, abstraction_files) {

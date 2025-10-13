@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@solidity-parser/parser": "^0.16.0",
-    "@truffle/contract-sources": "^0.1.12",
     "@truffle/error": "0.2.2",
     "@truffle/expect": "0.1.7",
     "ajv": "^6.10.2",
@@ -35,6 +34,7 @@
     "del": "^2.2.0",
     "enquirer": "^2.4.1",
     "finalhandler": "^1.1.2",
+    "glob": "^7.2.3",
     "find-up": "^4.1.0",
     "fs-extra": "^8.1.0",
     "graphlib": "^2.1.7",

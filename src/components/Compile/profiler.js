@@ -7,7 +7,7 @@ const fs = require('fs');
 const Graph = require('graphlib').Graph;
 const Parser = require('./parser');
 const expect = require('@truffle/expect');
-const find_contracts = require('@truffle/contract-sources');
+const { findContracts } = require('../../lib/utils');
 const CompileError = require('./compileerror');
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
       if (options.files) {
         done(null, options.files);
       } else {
-        find_contracts(contracts_directory, done);
+        findContracts(contracts_directory, done);
       }
     }
 
@@ -220,7 +220,7 @@ module.exports = {
       done(null, required);
     }
 
-    find_contracts(options.base_path, function (err, allPaths) {
+    findContracts(options.base_path, function (err, allPaths) {
       if (err) return callback(err);
 
       // Include paths for Solidity .sols, specified in options.
@@ -331,7 +331,7 @@ module.exports = {
       if (Array.isArray(directory)) {
         callback(null, directory);
       } else {
-        find_contracts(directory, callback);
+        findContracts(directory, callback);
       }
     }
 
