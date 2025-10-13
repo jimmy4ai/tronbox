@@ -1,4 +1,4 @@
-const TruffleError = require('@truffle/error');
+const TronBoxError = require('./errors/tronboxerror');
 const expect = require('@truffle/expect');
 const Resolver = require('../components/Resolver');
 const Artifactor = require('../components/Artifactor');
@@ -28,7 +28,7 @@ const Environment = {
 
     if (!network_config) {
       return callback(
-        new TruffleError(
+        new TronBoxError(
           'Unknown network "' + config.network + '". See your tronbox configuration file for available networks.'
         )
       );

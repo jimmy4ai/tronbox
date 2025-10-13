@@ -2,7 +2,7 @@ const _ = require('lodash');
 const path = require('path');
 const { constants, TronWeb } = require('./TronWrap');
 const Provider = require('./Provider');
-const TruffleError = require('@truffle/error');
+const TronBoxError = require('../lib/errors/tronboxerror');
 const Module = require('module');
 const findUp = require('find-up');
 const originalrequire = require('original-require');
@@ -398,7 +398,7 @@ Config.detect = function (options, filename) {
   });
 
   if (!file) {
-    throw new TruffleError('Could not find suitable configuration file.');
+    throw new TronBoxError('Could not find suitable configuration file.');
   }
 
   return this.load(file, options);

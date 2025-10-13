@@ -1,6 +1,6 @@
-const TruffleError = require('@truffle/error');
+const TronBoxError = require('./tronboxerror');
 
-class ConfigurationError extends TruffleError {
+class ConfigurationError extends TronBoxError {
   constructor(message) {
     super(message);
   }

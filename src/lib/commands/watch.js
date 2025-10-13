@@ -10,7 +10,7 @@ const command = {
     const path = require('path');
     const colors = require('colors');
     const Contracts = require('../../components/WorkflowCompile');
-    const TruffleError = require('@truffle/error');
+    const TronBoxError = require('../errors/tronboxerror');
 
     const config = Config.detect(options);
 
@@ -19,7 +19,7 @@ const command = {
     };
 
     const printFailure = function (err) {
-      if (err instanceof TruffleError) {
+      if (err instanceof TronBoxError) {
         console.error(err.message);
       } else {
         // Bubble up all other unexpected errors.
