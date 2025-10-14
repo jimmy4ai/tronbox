@@ -5,7 +5,7 @@ const BuildError = require('./errors/builderror');
 const child_process = require('child_process');
 const spawnargs = require('spawn-args');
 const _ = require('lodash');
-const expect = require('@truffle/expect');
+const { expect } = require('./utils');
 
 function CommandBuilder(command) {
   this.command = command;

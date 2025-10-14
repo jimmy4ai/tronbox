@@ -3,7 +3,7 @@ const path = require('path');
 const ResolverIntercept = require('./resolverintercept');
 const Require = require('../Require');
 const async = require('async');
-const expect = require('@truffle/expect');
+const { expect } = require('../../lib/utils');
 const Deployer = require('../Deployer');
 
 const TronWrap = require('../TronWrap');

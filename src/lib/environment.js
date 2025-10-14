@@ -1,5 +1,5 @@
 const TronBoxError = require('./errors/tronboxerror');
-const expect = require('@truffle/expect');
+const { expect } = require('./utils');
 const Resolver = require('../components/Resolver');
 const Artifactor = require('../components/Artifactor');
 const TronWrap = require('../components/TronWrap');

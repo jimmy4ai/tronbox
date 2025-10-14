@@ -6,8 +6,7 @@ const async = require('async');
 const fs = require('fs');
 const Graph = require('graphlib').Graph;
 const Parser = require('./parser');
-const expect = require('@truffle/expect');
-const { findContracts } = require('../../lib/utils');
+const { expect, findContracts } = require('../../lib/utils');
 const CompileError = require('./compileerror');
 
 module.exports = {

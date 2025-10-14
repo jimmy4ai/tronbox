@@ -2,8 +2,7 @@ const Profiler = require('./profiler');
 const OS = require('os');
 const path = require('path');
 const CompileError = require('./compileerror');
-const expect = require('@truffle/expect');
-const { findContracts } = require('../../lib/utils');
+const { expect, findContracts } = require('../../lib/utils');
 const Config = require('../Config');
 
 // Most basic of the compile commands. Takes a hash of sources, where

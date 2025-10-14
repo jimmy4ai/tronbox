@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@solidity-parser/parser": "^0.16.0",
-    "@truffle/expect": "0.1.7",
     "ajv": "^6.10.2",
     "async": "2.6.4",
     "axios": "1.12.0",
