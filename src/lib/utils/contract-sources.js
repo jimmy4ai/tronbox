@@ -1,7 +1,6 @@
 const debug = require('debug')('contract-sources');
 const path = require('path');
-const glob = require('glob');
-const { promisify } = require('util');
+const { glob } = require('glob');
 
 const DEFAULT_PATTERN = '**/*.{sol,vy,v.py,vyper.py,json,yul}';
 
@@ -18,7 +17,7 @@ module.exports = function findContractSources(pattern, callback) {
     dot: true
   };
 
-  return promisify(glob)(pattern, globOptions)
+  return glob(pattern, globOptions)
     .then(files => {
       debug('Found %d contract sources', files.length);
       if (callbackPassed) {
