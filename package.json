@@ -40,7 +40,6 @@
     "original-require": "1.0.1",
     "solc": "0.8.25",
     "source-map-support": "0.5.21",
-    "temp": "0.8.4",
     "tmp": "0.0.33",
     "tronweb": "6.0.0",
     "tsort": "0.0.1",

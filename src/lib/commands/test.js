@@ -44,7 +44,7 @@ Usage: $0 test [<files...>] [--file <file>]
   run: function (options, done) {
     const OS = require('os');
     const dir = require('node-dir');
-    const temp = require('temp');
+    const tmp = require('tmp');
     const Config = require('../../components/Config');
     const Artifactor = require('../../components/Artifactor');
     const Test = require('../test');
@@ -81,8 +81,6 @@ Usage: $0 test [<files...>] [--file <file>]
     }
     process.env.CURRENT = 'test';
 
-    let ipcDisconnect;
-
     let files = [];
 
     if (options.file) {
@@ -106,19 +104,12 @@ Usage: $0 test [<files...>] [--file <file>]
         return file.match(config.test_file_extension_regexp) != null;
       });
 
-      temp.mkdir('test-', function (err, temporaryDirectory) {
+      tmp.dir({ unsafeCleanup: true, prefix: 'test-' }, function (err, temporaryDirectory, removeCallback) {
         if (err) return done(err);
 
-        function cleanup() {
-          const args = arguments;
-          // Ensure directory cleanup.
-          temp.cleanup(function () {
-            // Ignore cleanup errors.
-            done.apply(null, args);
-            if (ipcDisconnect) {
-              ipcDisconnect();
-            }
-          });
+        function cleanup(...args) {
+          removeCallback();
+          done(...args);
         }
 
         function run() {
@@ -157,23 +148,6 @@ Usage: $0 test [<files...>] [--file <file>]
           Environment.detect(config, environmentCallback);
         } else {
           throw new Error('No development or test environment is configured in your project configuration.');
-
-          // var ipcOptions = {
-          //   network: "test"
-          // };
-          //
-          // var testrpcOptions = {
-          //   host: "127.0.0.1",
-          //   port: 7545,
-          //   network_id: 4447,
-          //   mnemonic: "candy maple cake sugar pudding cream honey rich smooth crumble sweet treat",
-          //   gasLimit: config.gas,
-          // };
-          //
-          // Develop.connectOrStart(ipcOptions, testrpcOptions, function(started, disconnect) {
-          //   ipcDisconnect = disconnect;
-          //   Environment.develop(config, testrpcOptions, environmentCallback);
-          // });
         }
       });
     });
