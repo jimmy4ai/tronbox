@@ -49,7 +49,7 @@ Usage: $0 test [<files...>] [--file <file>]
     const Artifactor = require('../../components/Artifactor');
     const Test = require('../test');
     const fs = require('fs');
-    const copy = require('../copy');
+    const fsExtra = require('fs-extra');
     const Environment = require('../environment');
     const TronWrap = require('../../components/TronWrap');
     const logErrorAndExit = require('../../components/TronWrap').logErrorAndExit;
@@ -145,7 +145,7 @@ Usage: $0 test [<files...>] [--file <file>]
           fs.stat(config.contracts_build_directory, function (err) {
             if (err) return run();
 
-            copy(config.contracts_build_directory, temporaryDirectory, function (err) {
+            fsExtra.copy(config.contracts_build_directory, temporaryDirectory, function (err) {
               if (err) return done(err);
 
               run();
