@@ -240,8 +240,8 @@ const Test = {
       global.tronWrap = tronWrap;
       global.tronWeb = tronWrap;
       global.waitForTransactionReceipt = waitForTransactionReceipt(tronWrap);
-      if (global.tronWrap._web3) {
-        global.web3 = global.tronWrap._web3;
+      if (global.tronWrap._ethers) {
+        global.ethers = global.tronWrap._ethers;
       }
 
       accept();

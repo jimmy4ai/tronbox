@@ -1,4 +1,4 @@
-const { Web3 } = require('web3');
+const { ethers } = require('ethers');
 const { TronWeb: _TronWeb } = require('tronweb');
 const chalk = require('chalk');
 const constants = require('./constants');
@@ -75,7 +75,7 @@ function init(options, extraOptions = {}) {
 
   if (extraOptions.verify) {
     const configFile = extraOptions.evm ? 'tronbox-evm-config.js' : 'tronbox-config.js';
-    const clientName = extraOptions.evm ? 'Web3' : 'TronWeb';
+    const clientName = extraOptions.evm ? 'Ethers' : 'TronWeb';
 
     if (!options) {
       throw new Error(
@@ -101,7 +101,7 @@ function init(options, extraOptions = {}) {
     if (options.mnemonic) {
       return _TronWeb.fromMnemonic(options.mnemonic, options.path).privateKey.replace(/^0x/, '');
     }
-    return options.privateKey;
+    return options.privateKey.replace(/^0x/, '');
   };
 
   TronWrap.prototype = new _TronWeb(
@@ -123,12 +123,16 @@ function init(options, extraOptions = {}) {
     tronWrap._log = extraOptions.logger;
   }
   if (extraOptions.evm) {
-    const web3 = new Web3(options.fullNode || options.fullHost);
-    let pk = getPrivateKey();
-    if (!pk.startsWith('0x')) pk = '0x' + pk;
-    const account = web3.eth.accounts.wallet.add(pk);
-    tronWrap._web3 = web3;
-    tronWrap._web3_accounts = [account[0].address];
+    const provider = new ethers.JsonRpcProvider(options.fullNode || options.fullHost);
+    const wallet = new ethers.Wallet(getPrivateKey(), provider);
+    tronWrap._ethers_wallets = { [wallet.address]: wallet };
+    tronWrap._ethers_accounts = [wallet.address];
+    tronWrap._ethers = {
+      ...ethers,
+      provider,
+      getSigner: address => tronWrap._ethers_wallets[address],
+      getSigners: () => Object.values(tronWrap._ethers_wallets)
+    };
   }
 
   tronWrap._getNetworkInfo = async function () {
@@ -541,8 +545,8 @@ function init(options, extraOptions = {}) {
   };
 
   tronWrap._evmGetAccounts = async function (callback) {
-    const accounts = [...tronWrap._web3_accounts];
-    tronWrap._privateKeyByAccount[accounts[0]] = tronWrap._web3.eth.accounts.wallet.get(accounts[0]).privateKey;
+    const accounts = [...tronWrap._ethers_accounts];
+    tronWrap._privateKeyByAccount[accounts[0]] = tronWrap._ethers_wallets[accounts[0]].privateKey;
     if (callback) {
       return callback(null, accounts);
     }
@@ -550,11 +554,8 @@ function init(options, extraOptions = {}) {
   };
 
   tronWrap._evmDeployContract = async function (option, callback) {
-    const web3 = tronWrap._web3;
-    const contract = new web3.eth.Contract(option.abi);
-    const deployFunc = contract.deploy({ data: option.data, arguments: option.parameters });
     const opt = {
-      from: option.from || tronWrap._web3_accounts[0],
+      from: option.from || tronWrap._ethers_accounts[0],
       gas: option.gas || option.gasLimit || this.networkConfig.gas,
       gasPrice: option.gasPrice || this.networkConfig.gasPrice,
       maxPriorityFeePerGas: option.maxPriorityFeePerGas || this.networkConfig.maxPriorityFeePerGas,
@@ -568,29 +569,38 @@ function init(options, extraOptions = {}) {
       delete opt.gasPrice;
     }
 
-    try {
-      if (!opt.gas) {
-        dlog('Estimate the gas used for deploying');
-        opt.gas = await deployFunc.estimateGas(opt);
+    Object.keys(opt).forEach(key => {
+      if (opt[key] === undefined || opt[key] === null) {
+        delete opt[key];
       }
-      let transactionHash = null;
+    });
+
+    try {
       dlog('Deploying contract:', option.contractName);
-      const newContract = await deployFunc.send(opt).on('transactionHash', hash => {
-        transactionHash = hash;
-      });
-      const { address } = newContract.options;
+      if (opt.nonce === undefined) {
+        opt.nonce = await tronWrap._evmGetNonce(opt.from);
+      }
+      const wallet = tronWrap._ethers_wallets[opt.from];
+      const factory = new ethers.ContractFactory(option.abi, option.data, wallet);
+      const constructorArgs = option.parameters || [];
+      const deployedContract = await factory.deploy(...constructorArgs, opt);
+      const deploymentTx = deployedContract.deploymentTransaction();
+      if (!deploymentTx) {
+        return callback(new Error('Failed to get deployment transaction'));
+      }
+
+      const transactionHash = deploymentTx.hash;
+      const address = await deployedContract.getAddress();
+
       dlog('Contract broadcasted', {
         address,
         transactionHash
       });
 
-      try {
-        const receipt = await tronWrap._evmWaitForTransaction(transactionHash);
-        if (!receipt || !receipt.status) {
-          return callback(new Error('Contract deployment failed'));
-        }
-      } catch (err) {
-        return callback(err);
+      const receipt = await deploymentTx.wait();
+      if (!receipt || !receipt.status) {
+        const statusMsg = receipt ? `status code: ${receipt.status}` : 'no receipt';
+        return callback(new Error(`Contract deployment failed (${statusMsg})`));
       }
 
       dlog('Contract deployed:', option.contractName);
@@ -604,12 +614,9 @@ function init(options, extraOptions = {}) {
   };
 
   tronWrap._evmTriggerContract = async function (option, callback) {
-    const web3 = tronWrap._web3;
-    const contract = new web3.eth.Contract(option.abi, option.address);
-    const methodFunc = contract.methods[option.methodName](...option.args);
     const { methodArgs } = option;
     const opt = {
-      from: methodArgs.from || tronWrap._web3_accounts[0],
+      from: methodArgs.from || tronWrap._ethers_accounts[0],
       gas: methodArgs.gas || methodArgs.gasLimit || this.networkConfig.gas,
       gasPrice: methodArgs.gasPrice || this.networkConfig.gasPrice,
       maxPriorityFeePerGas: methodArgs.maxPriorityFeePerGas || this.networkConfig.maxPriorityFeePerGas,
@@ -623,31 +630,39 @@ function init(options, extraOptions = {}) {
       delete opt.gasPrice;
     }
 
+    Object.keys(opt).forEach(key => {
+      if (opt[key] === undefined || opt[key] === null) {
+        delete opt[key];
+      }
+    });
+
     let callSend = 'send';
     const funAbi = tronWrap._findMethodAbi(option.methodName, option.abi);
     callSend = /payable/.test(funAbi.stateMutability) ? 'send' : 'call';
 
     try {
+      if (opt.nonce === undefined) {
+        opt.nonce = await tronWrap._evmGetNonce(opt.from);
+      }
+      const wallet = tronWrap._ethers_wallets[opt.from];
+      const contract = new ethers.Contract(option.address, option.abi, wallet);
+      const methodArgs = option.args || [];
+      const methodFunc = contract[option.methodName];
+
       if (callSend === 'call') {
-        const callRes = await methodFunc.call(opt);
+        const callRes = await methodFunc.staticCall(...methodArgs, opt);
         return callback(null, callRes);
       }
 
-      if (!opt.gas) {
-        dlog('Estimate the gas used for sending transaction');
-        opt.gas = await methodFunc.estimateGas(opt);
-      }
       dlog('Sending transaction');
-      const tx = await methodFunc.send(opt);
-      const { transactionHash } = tx;
+      const tx = await methodFunc.send(...methodArgs, opt);
+      const transactionHash = tx.hash;
       dlog('Transaction sent');
-      try {
-        const receipt = await tronWrap._evmWaitForTransaction(transactionHash);
-        if (!receipt || !receipt.status) {
-          return callback(new Error(`Transaction: ${transactionHash} exited with an error (status 0).`));
-        }
-      } catch (err) {
-        return callback(err);
+
+      const receipt = await tx.wait();
+      if (!receipt || !receipt.status) {
+        const statusMsg = receipt ? `status code: ${receipt.status}` : 'no receipt';
+        return callback(new Error(`Transaction failed (${statusMsg})`));
       }
       callback(null, transactionHash);
     } catch (error) {
@@ -655,35 +670,13 @@ function init(options, extraOptions = {}) {
     }
   };
 
-  tronWrap._evmWaitForTransaction = async function (txHash) {
-    const web3 = tronWrap._web3;
-    const curBlockNumber = await web3.eth.getBlockNumber();
-    const transactionBlockTimeout = 50;
-    const getReceipt = async () => {
-      let timeout = false;
-      try {
-        const blockNumber = await web3.eth.getBlockNumber();
-        if (blockNumber - curBlockNumber > transactionBlockTimeout) {
-          timeout = true;
-        } else {
-          dlog('Requesting transaction', txHash);
-          const receipt = await web3.eth.getTransactionReceipt(txHash);
-          if (receipt) return receipt;
-        }
-      } catch (error) {}
-
-      if (timeout) {
-        throw new Error(
-          `Transaction was not mined within ${transactionBlockTimeout} blocks, please make sure your transaction was properly sent. Be aware that it might still be mined!`
-        );
-      }
-
-      await sleep(1000);
-      return await getReceipt();
-    };
-
-    dlog('Waiting for transaction');
-    return await getReceipt();
+  tronWrap._evmGetNonce = async function (address) {
+    try {
+      const provider = tronWrap._ethers.provider;
+      return await provider.send('eth_getTransactionCount', [address, 'pending']);
+    } catch (error) {
+      throw error;
+    }
   };
 
   return new TronWrap();

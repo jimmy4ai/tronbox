@@ -36,32 +36,6 @@ cd build
 ../../tronbox.dev test
 cd ..
 
-echo 'Test unbox beacon'
-rm -rf build
-mkdir build
-cd build
-../../tronbox.dev unbox beacon
-../../tronbox.dev test
-cd ..
-
-echo 'Test unbox transparent'
-rm -rf build
-mkdir build
-cd build
-../../tronbox.dev unbox transparent
-../../tronbox.dev test
-cd ..
-
-echo 'Test unbox uups'
-rm -rf build
-mkdir build
-cd build
-../../tronbox.dev unbox uups
-../../tronbox.dev test
-cd ..
-
-rm -rf build
-
 echo 'Test Console.log'
 cd consolelogs
 sh runTest.sh

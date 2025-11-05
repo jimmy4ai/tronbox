@@ -52,7 +52,7 @@ module.exports = [
         ...globals.mocha,
         tronWeb: 'readonly',
         tronWrap: 'readonly',
-        web3: 'readonly',
+        ethers: 'readonly',
         assert: 'readonly',
         expect: 'readonly',
         artifacts: 'readonly',

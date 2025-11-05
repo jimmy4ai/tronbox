@@ -42,7 +42,7 @@ module.exports = function (contract, args, deployer) {
       .then(function (instance) {
         const tronWrap = TronWrap();
         if (should_deploy === true) {
-          if (tronWrap._web3) {
+          if (tronWrap._ethers) {
             deployer.logger.log(contract.contract_name + ':\n    (hex) ' + instance.address);
           } else {
             deployer.logger.log(

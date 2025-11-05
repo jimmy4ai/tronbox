@@ -6,7 +6,7 @@ module.exports = async function (deployer, network) {
   await deployer.link(ConvertLib, MetaCoin);
   await deployer.deploy(MetaCoin, 10000);
 
-  if (network === 'development' && typeof web3 === 'undefined') {
+  if (network === 'development' && typeof ethers === 'undefined') {
     // This code block is executed only when the network is 'development' as defined in tronbox-config.js
     const metaCoinInstance = await MetaCoin.deployed();
 

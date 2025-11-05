@@ -79,7 +79,7 @@ Console.prototype.start = function (callback) {
       context: {
         tronWrap: self.tronWrap,
         tronWeb: self.tronWrap,
-        web3: self.tronWrap._web3 ? self.tronWrap._web3 : undefined
+        ethers: self.tronWrap._ethers ? self.tronWrap._ethers : undefined
       },
       interpreter: self.interpret.bind(self),
       done: callback

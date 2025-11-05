@@ -31,8 +31,8 @@ if (commands[0] === '--download-compiler' && commands[1]) {
     // Don't exit if no error; if something is keeping the process open,
     // like `tronbox console`, then let it.
 
-    // Clear any polling or open sockets - `provider-engine` in HDWallet
-    // and `web3 1.0 confirmations` both leave interval timers etc wide open.
+    // Clear any polling or open sockets - legacy provider engines and
+    // confirmation trackers often leave interval timers wide open.
     const handles = process._getActiveHandles();
     handles.forEach(handle => {
       if (typeof handle.close === 'function') {

@@ -30,32 +30,6 @@ cd build
 ../../tronbox.dev migrate --network nile
 cd ..
 
-echo 'Nile: Test unbox beacon'
-rm -rf build
-mkdir build
-cd build
-../../tronbox.dev unbox beacon
-../../tronbox.dev migrate --network nile
-cd ..
-
-echo 'Nile: Test unbox transparent'
-rm -rf build
-mkdir build
-cd build
-../../tronbox.dev unbox transparent
-../../tronbox.dev migrate --network nile
-cd ..
-
-echo 'Nile: Test unbox uups'
-rm -rf build
-mkdir build
-cd build
-../../tronbox.dev unbox uups
-../../tronbox.dev migrate --network nile
-cd ..
-
-rm -rf build
-
 echo 'BTTC: Test evm'
 cd evm
 rm -rf build

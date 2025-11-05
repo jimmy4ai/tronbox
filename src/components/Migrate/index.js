@@ -31,8 +31,8 @@ Migration.prototype.run = function (options, callback) {
     tronWeb: tronWrap,
     waitForTransactionReceipt: waitForTransactionReceipt(tronWrap)
   };
-  if (tronWrap._web3) {
-    context.web3 = tronWrap._web3;
+  if (tronWrap._ethers) {
+    context.ethers = tronWrap._ethers;
   }
 
   const deployer = new Deployer({
