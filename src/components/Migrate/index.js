@@ -59,7 +59,14 @@ Migration.prototype.run = function (options, callback) {
 
         if (options.save === false) return;
 
-        const Migrations = resolver.require('./Migrations.sol');
+        try {
+          resolver.require('Migrations');
+        } catch (error) {
+          // don't throw, Migrations contract optional
+          return;
+        }
+
+        const Migrations = resolver.require('Migrations');
 
         if (Migrations && Migrations.isDeployed()) {
           logger.log('Saving successful migration to network...');
@@ -68,10 +75,6 @@ Migration.prototype.run = function (options, callback) {
           const result = Migrations.call('setCompleted', [self.number]);
 
           return Promise.resolve(result);
-
-          // return Migrations.deployed().then(function (migrations) {
-          //   return Migrations.call('setCompleted', [self.number]);
-          // });
         }
       })
       .then(function () {
@@ -268,6 +271,13 @@ const Migrate = {
       tronWrap = TronWrap();
     }
 
+    try {
+      options.resolver.require('Migrations');
+    } catch (error) {
+      // don't throw, Migrations contract optional
+      return callback(null, 0);
+    }
+
     const Migrations = options.resolver.require('Migrations');
 
     if (Migrations.isDeployed() === false) {
@@ -312,7 +322,7 @@ const Migrate = {
           migrations.shift();
         }
 
-        callback(null, migrations.length > 1);
+        callback(null, migrations.length > 1 || (migrations.length && number === 0));
       });
     });
   }
