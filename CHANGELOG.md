@@ -11,7 +11,7 @@
 
 ### Dependencies
 
-- Upgraded `tronweb` from 6.0.0 to 6.1.0
+- Upgraded `tronweb` from 6.0.0 to 6.1.1
 - Upgraded `mocha` from 10.2.0 to 11.7.4
 - Upgraded `eslint` from 9.31.0 to 9.39.1
 - Upgraded `eslint-plugin-n` from 17.15.1 to 17.23.1
