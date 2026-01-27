@@ -19,6 +19,7 @@
 - Upgraded `@solidity-parser/parser` from 0.16.0 to 0.20.2
 - Upgraded Babel toolchain from 7.25.9 to 7.28.3
 - Pinned all dependencies to exact versions for reproducible builds
+- Raised minimum supported Node.js version to 20
 
 ### Removals
 
