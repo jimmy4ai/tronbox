@@ -1,4 +1,4 @@
-const expect = require('@truffle/expect');
+const { expect } = require('../../lib/utils');
 const DeferredChain = require('./src/deferredchain');
 const deploy = require('./src/actions/deploy');
 const deployMany = require('./src/actions/deploymany');

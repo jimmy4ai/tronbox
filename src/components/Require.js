@@ -3,7 +3,7 @@ const path = require('path');
 const Module = require('module');
 const vm = require('vm');
 const originalrequire = require('original-require');
-const expect = require('@truffle/expect');
+const { expect } = require('../lib/utils');
 const Config = require('./Config');
 
 // options.file: path to file to execute. Must be a module that exports a function.

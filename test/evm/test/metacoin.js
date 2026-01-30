@@ -8,7 +8,7 @@ contract('MetaCoin', function (accounts) {
   });
 
   it('should verify that the contract has been deployed by accounts[0]', async function () {
-    assert.equal(await meta.getOwner(), web3.eth.accounts.wallet[0].address);
+    assert.equal(await meta.getOwner(), ethers.getSigners()[0].address);
   });
 
   it('should put 10000 MetaCoin in the first account', async function () {

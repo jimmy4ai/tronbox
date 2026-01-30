@@ -7,7 +7,7 @@ const Resolver = require('../components/Resolver');
 const TestRunner = require('./testing/testrunner');
 const TestResolver = require('./testing/testresolver');
 const TestSource = require('./testing/testsource');
-const expect = require('@truffle/expect');
+const { expect } = require('./utils');
 const Migrate = require('../components/Migrate');
 const Profiler = require('../components/Compile/profiler');
 const originalrequire = require('original-require');
@@ -240,8 +240,8 @@ const Test = {
       global.tronWrap = tronWrap;
       global.tronWeb = tronWrap;
       global.waitForTransactionReceipt = waitForTransactionReceipt(tronWrap);
-      if (global.tronWrap._web3) {
-        global.web3 = global.tronWrap._web3;
+      if (global.tronWrap._ethers) {
+        global.ethers = global.tronWrap._ethers;
       }
 
       accept();

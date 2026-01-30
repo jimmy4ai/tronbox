@@ -1,3 +1,46 @@
+**4.5.0**
+
+### Major Refactoring
+
+- **BREAKING CHANGE**: Migrated from `web3` v4 to `ethers` v6 for EVM mode
+  - Migration scripts, test scripts, and TronBox console now use `ethers` instead of `web3`
+
+### Features
+
+- Made Migrations contract optional - projects can now run migrations without requiring `Migrations.sol`
+
+### Dependencies
+
+- Upgraded `tronweb` from 6.0.0 to 6.1.1
+- Upgraded `mocha` from 10.2.0 to 11.7.4
+- Upgraded `eslint` from 9.31.0 to 9.39.1
+- Upgraded `eslint-plugin-n` from 17.15.1 to 17.23.1
+- Upgraded `axios` from 1.11.0 to 1.12.0
+- Upgraded `lodash` from 4.17.21 to 4.17.23
+- Upgraded `@solidity-parser/parser` from 0.16.0 to 0.20.2
+- Upgraded Babel toolchain from 7.25.9 to 7.28.3
+- Pinned all dependencies to exact versions for reproducible builds
+- Raised minimum supported Node.js version to 20
+
+### Removals
+
+- Removed `@truffle/contract-sources` dependency (inlined contract discovery logic)
+- Removed `@truffle/error` dependency (replaced with custom TronBoxError class)
+- Removed `@truffle/expect` dependency (replaced with local utility)
+- Removed `truffle-blockchain-utils` dependency (unused)
+- Removed `cpr` dependency (replaced with native `fs.promises` implementation)
+- Removed `temp` dependency (replaced with `tmp` package)
+- Removed `web3` v4.16.0 dependency (replaced with `ethers` v6.15.0)
+
+### Bug Fixes & Improvements
+
+- Fixed config property path resolution to handle relative paths correctly
+- Improved error messages and command-line output wording
+
+### Documentation
+
+- Updated comments throughout codebase to reflect `ethers` migration
+
 **4.4.0**
 
 - Added support for Tron Solidity compiler `0.8.25`
@@ -73,7 +116,8 @@
 
 - Add support for Solidity compiler 0.8.20
 - Add `debug_traceTransaction` && `debug_storageRangeAt` function to debug environment for supporting [tronbox/tre](https://hub.docker.com/r/tronbox/tre) docker image.
-  `debug_traceTransaction`:
+
+`debug_traceTransaction`:
 
 ```javascript
 const txid = 'f6b72dda65682b858c1c1980710aad7955fbf6db91c66840da0f852fc3cc694b';

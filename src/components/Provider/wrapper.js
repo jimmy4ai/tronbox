@@ -2,10 +2,10 @@ const ProviderError = require('./error');
 
 module.exports = {
   /*
-   * Web3.js Transport Wrapper
+   * JSON-RPC Transport Wrapper
    *
-   * Wraps an underlying web3 provider's RPC transport methods (send/sendAsync)
-   * for Truffle-specific purposes, mainly for logging / request verbosity.
+   * Wraps an underlying provider's RPC transport methods (send/sendAsync)
+   * for TronBox-specific purposes, mainly for logging / request verbosity.
    */
   wrap: function (provider, options) {
     /* wrapping should be idempotent */
@@ -15,7 +15,7 @@ module.exports = {
     options = options || {};
     // custom logger
     options.logger = options.logger || console;
-    // to see what web3 is sending and receiving.
+    // to see what the provider is sending and receiving.
     options.verbose = options.verbose || options.verboseRpc || false;
 
     /* create wrapper functions for before/after send */
@@ -38,7 +38,7 @@ module.exports = {
   /*
    * Transport Hook Generators
    *
-   * Used to wrap underlying web3.js behavior before/after sending request
+   * Used to wrap underlying JSON-RPC behavior before/after sending request
    * payloads to the RPC.
    *
    * Transport hooks may be used to perform additional operations before/after

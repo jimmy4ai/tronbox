@@ -4,7 +4,7 @@ const provision = require('../components/Provisioner');
 const contract = require('../components/Contract');
 const TronWrap = require('../components/TronWrap');
 const vm = require('vm');
-const expect = require('@truffle/expect');
+const { expect } = require('./utils');
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
@@ -79,7 +79,7 @@ Console.prototype.start = function (callback) {
       context: {
         tronWrap: self.tronWrap,
         tronWeb: self.tronWrap,
-        web3: self.tronWrap._web3 ? self.tronWrap._web3 : undefined
+        ethers: self.tronWrap._ethers ? self.tronWrap._ethers : undefined
       },
       interpreter: self.interpret.bind(self),
       done: callback

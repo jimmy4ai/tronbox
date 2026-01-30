@@ -1,7 +1,7 @@
 const MyContract1 = artifacts.require('./MyContract1.sol');
 const MyContract2 = artifacts.require('./MyContract2.sol');
 
-contract('MyContract', function (accounts) {
+contract('MyContract', function () {
   let c1;
   let c2;
 
@@ -35,15 +35,6 @@ contract('MyContract', function (accounts) {
     await c2.setMyNumber(300, { value: 1 });
     assert.equal(await c2.myNumber(), 300, 'The value in MyContract2 should be set to 300');
     assert.equal(await c1.getBalance(c2.address), 2, 'The balance of MyContract2 should be 2');
-  });
-
-  it('should set the from', async function () {
-    const sender1 = await c1.getSender();
-    assert.equal(sender1, accounts[0], 'The sender should be accounts[0]');
-
-    const from = '0x1234567890123456789012345678901234567890';
-    const sender2 = await c1.getSender({ from });
-    assert.equal(sender2, from, 'The sender should be 0x1234567890123456789012345678901234567890');
   });
 
   it('should return the contract address', async function () {

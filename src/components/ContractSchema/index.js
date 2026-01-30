@@ -150,7 +150,7 @@ function chain() {
 // Schema module
 //
 
-const TruffleContractSchema = {
+const TronBoxContractSchema = {
   // Return a promise to validate a contract object
   // - Resolves as validated `contractObj`
   // - Rejects with list of errors from schema validator
@@ -226,4 +226,4 @@ const TruffleContractSchema = {
   }
 };
 
-module.exports = TruffleContractSchema;
+module.exports = TronBoxContractSchema;

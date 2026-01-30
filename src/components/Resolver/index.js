@@ -4,7 +4,7 @@ const FSSource = require('./fs');
 const path = require('path');
 const whilst = require('async/whilst');
 const contract = require('../Contract');
-const expect = require('@truffle/expect');
+const { expect } = require('../../lib/utils');
 const provision = require('../Provisioner');
 
 function Resolver(options) {

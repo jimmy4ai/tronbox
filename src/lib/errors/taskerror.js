@@ -1,5 +1,5 @@
-const TruffleError = require('@truffle/error');
-class TaskError extends TruffleError {
+const TronBoxError = require('./tronboxerror');
+class TaskError extends TronBoxError {
   constructor(message) {
     super(message);
   }

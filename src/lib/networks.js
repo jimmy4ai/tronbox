@@ -1,9 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const OS = require('os');
-const BlockchainUtils = require('truffle-blockchain-utils');
-const Provider = require('../components/Provider');
-const async = require('async');
 
 const Networks = {
   deployed: function (options, callback) {
@@ -212,38 +209,6 @@ const Networks = {
         })
         .catch(callback);
     });
-  },
-
-  // Try to connect to every named network except for "test" and "development"
-  asURIs: function (options, networks, callback) {
-    if (typeof networks === 'function') {
-      callback = networks;
-      networks = Object.keys(options.networks);
-    }
-
-    const result = {
-      uris: {},
-      failed: []
-    };
-
-    async.each(
-      networks,
-      function (network_name, finished) {
-        const provider = Provider.create(options.networks[network_name]);
-        BlockchainUtils.asURI(provider, function (err, uri) {
-          if (err) {
-            result.failed.push(network_name);
-          } else {
-            result.uris[network_name] = uri;
-          }
-          finished();
-        });
-      },
-      function (err) {
-        if (err) return callback(err);
-        callback(null, result);
-      }
-    );
   },
 
   matchesNetwork: function (network_id, network_options, callback) {
