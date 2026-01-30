@@ -16,6 +16,7 @@
 - Upgraded `eslint` from 9.31.0 to 9.39.1
 - Upgraded `eslint-plugin-n` from 17.15.1 to 17.23.1
 - Upgraded `axios` from 1.11.0 to 1.12.0
+- Upgraded `lodash` from 4.17.21 to 4.17.23
 - Upgraded `@solidity-parser/parser` from 0.16.0 to 0.20.2
 - Upgraded Babel toolchain from 7.25.9 to 7.28.3
 - Pinned all dependencies to exact versions for reproducible builds
