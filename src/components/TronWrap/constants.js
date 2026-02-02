@@ -7,6 +7,7 @@ module.exports = {
     tokenValue: undefined,
     tokenId: undefined,
     from: undefined,
+    blockHeader: undefined,
 
     // evm
     gasPrice: undefined,

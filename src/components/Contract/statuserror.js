@@ -1,8 +1,8 @@
-const TruffleError = require('@truffle/error');
+const TronBoxError = require('../../lib/errors/tronboxerror');
 
 const defaultGas = 90000;
 
-class StatusError extends TruffleError {
+class StatusError extends TronBoxError {
   constructor(args, tx, receipt) {
     let message;
     const gasLimit = parseInt(args.gas) || defaultGas;

@@ -14,7 +14,3 @@ const contract = function (options) {
 };
 
 module.exports = contract;
-
-if (typeof window !== 'undefined') {
-  window.TruffleContract = contract;
-}

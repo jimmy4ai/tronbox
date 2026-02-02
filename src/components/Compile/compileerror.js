@@ -1,7 +1,7 @@
 const colors = require('colors');
-const TruffleError = require('@truffle/error');
+const TronBoxError = require('../../lib/errors/tronboxerror');
 
-class CompileError extends TruffleError {
+class CompileError extends TronBoxError {
   constructor(message) {
     // Note we trim() because solc likes to add extra whitespace.
     let fancy_message = message.trim() + '\n' + colors.red('Compilation failed. See above.');

@@ -1,5 +1,5 @@
 const repl = require('repl');
-const expect = require('@truffle/expect');
+const { expect } = require('./utils');
 const async = require('async');
 const EventEmitter = require('events');
 const inherits = require('util').inherits;

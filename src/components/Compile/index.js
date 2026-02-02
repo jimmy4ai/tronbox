@@ -2,8 +2,7 @@ const Profiler = require('./profiler');
 const OS = require('os');
 const path = require('path');
 const CompileError = require('./compileerror');
-const expect = require('@truffle/expect');
-const find_contracts = require('@truffle/contract-sources');
+const { expect, findContracts } = require('../../lib/utils');
 const Config = require('../Config');
 
 // Most basic of the compile commands. Takes a hash of sources, where
@@ -284,7 +283,7 @@ function orderABI(contract) {
 // quiet: Boolean. Suppress output. Defaults to false.
 // strict: Boolean. Return compiler warnings as errors. Defaults to false.
 compile.all = function (options, callback) {
-  find_contracts(options.contracts_directory, function (err, files) {
+  findContracts(options.contracts_directory, function (err, files) {
     options.paths = files;
     compile.with_dependencies(options, callback);
   });

@@ -1,4 +1,4 @@
-const { Web3, Contract: Web3Contract } = require('web3');
+const { ethers } = require('ethers');
 const TronWrap = require('../TronWrap');
 const { constants } = require('../TronWrap');
 const BigNumber = require('bignumber.js');
@@ -25,7 +25,6 @@ const Utils = {
   is_big_number: function (val) {
     if (typeof val !== 'object') return false;
 
-    // Instanceof won't work because we have multiple versions of Web3.
     try {
       new BigNumber(val);
       return true;
@@ -80,7 +79,7 @@ function Contract(contract) {
   this.abi = constructor.abi;
   if (typeof contract === 'string') {
     this.address = contract;
-    this.contract = new Web3Contract(this.abi, '');
+    this.contract = new ethers.Contract(contract, this.abi, tronWrap._ethers.provider);
   } else {
     this.allEvents = contract.allEvents;
     this.contract = contract;
@@ -282,9 +281,9 @@ Contract._static_methods = {
       }
 
       let getContract;
-      if (tronWrap._web3) {
+      if (tronWrap._ethers) {
         self.address = self.address.toLowerCase().replace(/^41/, '0x');
-        getContract = tronWrap._web3.eth.getCode(self.address);
+        getContract = tronWrap._ethers.provider.getCode(self.address);
       } else {
         self.address = self.address.toLowerCase().replace(/^0x/, '41');
         getContract = tronWrap.trx.getContract(self.address);
@@ -292,7 +291,7 @@ Contract._static_methods = {
       getContract
         .then(res => {
           const noCodeMsg = `${self.contractName} has not been deployed to detected network; no code at address ${self.address}`;
-          if (tronWrap._web3) {
+          if (tronWrap._ethers) {
             if (res === '0x') {
               throw new Error(noCodeMsg);
             }
@@ -423,7 +422,7 @@ Contract._static_methods = {
 
     json = json || {};
 
-    const temp = function TruffleContract() {
+    const temp = function TronBoxContract() {
       this.constructor = temp;
       return Contract.apply(this, arguments);
     };
@@ -752,9 +751,9 @@ Contract._properties = {
       return this._json.updatedAt;
     }
   },
-  // Compatible with Web3
-  web3: function () {
-    return new Web3();
+  // Compatible with Ethers.js
+  ethers: function () {
+    return ethers;
   }
 };
 

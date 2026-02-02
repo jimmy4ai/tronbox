@@ -37,9 +37,5 @@ module.exports = {
       provider = new HttpProvider(fullHost);
     }
     return this.wrap(provider, options);
-  },
-
-  test_connection: function (provider, callback) {
-    callback(null, true);
   }
 };

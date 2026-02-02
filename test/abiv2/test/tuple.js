@@ -70,4 +70,78 @@ contract('Tuple', function () {
     assert.equal(uint256CallResult, '0x7f98a45e', 'func(uint256) using .call returned an unexpected value');
     assert.equal(addressCallResult, '0xb8550dc7', 'func(address) using .call returned an unexpected value');
   });
+
+  it('should set transaction timestamp when deploying with a provided blockHeader', async function () {
+    const person = ['insert', 100];
+    const currentBlock = await tronWeb.trx.getCurrentBlock();
+    const expectedTimestamp = 1;
+    const blockHeader = {
+      ref_block_bytes: currentBlock.block_header.raw_data.number.toString(16).slice(-4).padStart(4, '0'),
+      ref_block_hash: currentBlock.blockID.slice(16, 32),
+      expiration: currentBlock.block_header.raw_data.timestamp + 60 * 1000,
+      timestamp: expectedTimestamp
+    };
+    const deployedInstance = await Tuple.new(person, { blockHeader });
+    const txReceipt = await tronWeb.trx.getTransaction(deployedInstance.transactionHash);
+    assert.equal(
+      txReceipt.raw_data.timestamp,
+      expectedTimestamp,
+      'Transaction receipt timestamp should match the provided timestamp'
+    );
+  });
+
+  it('should insert with txLocal and set timestamp in the transaction receipt', async function () {
+    const currentBlock = await tronWeb.trx.getCurrentBlock();
+    const expectedTimestamp = 1;
+    const blockHeader = {
+      ref_block_bytes: currentBlock.block_header.raw_data.number.toString(16).slice(-4).padStart(4, '0'),
+      ref_block_hash: currentBlock.blockID.slice(16, 32),
+      expiration: currentBlock.block_header.raw_data.timestamp + 60 * 1000,
+      timestamp: expectedTimestamp
+    };
+    const person = ['insert', 100];
+    const txId = await tuple.insert(person, { txLocal: true, blockHeader });
+    const txReceipt = await tronWeb.trx.getTransaction(txId);
+    assert.equal(
+      txReceipt.raw_data.timestamp,
+      expectedTimestamp,
+      'Transaction receipt timestamp should match the provided timestamp'
+    );
+  });
+
+  it('should handle shouldPollResponse / keepTxID / rawResponse variants and decode contractResult', async function () {
+    const personA = ['insert', 100];
+    const resultA = await tuple.insert(personA, {
+      shouldPollResponse: true
+    });
+    const personB = ['insert', 99];
+    const resultB = await tuple.insert(personB, {
+      shouldPollResponse: true,
+      keepTxID: true
+    });
+    const personC = ['insert', 98];
+    const resultC = await tuple.insert(personC, {
+      shouldPollResponse: true,
+      rawResponse: true
+    });
+    const decodedC = await tronWeb.utils.abi.decodeParamsV2ByABI(
+      tuple.abi.filter(i => i.name === 'insert')[0],
+      `0x${resultC.contractResult}`
+    );
+
+    assert.deepEqual(personA, turnBN2N(resultA), 'Result A did not match the expected values');
+    assert.deepEqual(personB, turnBN2N(resultB[1]), 'Result B (with keepTxID) did not match the expected values');
+    assert.deepEqual(personC, turnBN2N(decodedC[0]), 'Decoded Result C did not match the expected values');
+
+    if (config.network !== 'development') {
+      try {
+        await tuple.insert(personA, {
+          shouldPollResponse: true,
+          pollTimes: 1
+        });
+      } catch (error) {
+        assert.include(error, 'Cannot find result in solidity node', 'Expected error when pollTimes is insufficient');
+      }
+    }
+  });
 });
