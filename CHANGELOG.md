@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.11.0
+
+### Features
+
+- Added support for Tron Solidity compilers 0.8.30 and 0.8.31; new projects default to 0.8.31
+
 ## 4.10.0
 
 ### Features
