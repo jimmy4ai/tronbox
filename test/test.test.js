@@ -149,6 +149,17 @@ describe('tronbox test', function () {
       });
     });
 
+    describe('test_deployment', () => {
+      const env = { TEST_DIR: 'test_deployment' };
+
+      it('rejects a deployment response for a different contract address', () => {
+        const r = runCli(['test'], { cwd, env });
+        expect(r.status, r.stderr).to.equal(0);
+        expect(r.stdout).to.include('Contract: Deployment address');
+        expect(r.stdout).to.include('1 passing');
+      });
+    });
+
     describe('test_failing', () => {
       const env = { TEST_DIR: 'test_failing' };
 
