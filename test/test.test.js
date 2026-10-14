@@ -140,14 +140,9 @@ describe('tronbox test', function () {
     });
 
     describe('test_require', () => {
-      const env = {
-        TEST_DIR: 'test_require',
-        BUILD_DIR: 'build_require'
-      };
-      const altBuildDir = path.join(cwd, env.BUILD_DIR);
+      const env = { TEST_DIR: 'test_require' };
 
       it('exercises Resolver.require dispatch paths', () => {
-        fs.removeSync(altBuildDir);
         const r = runCli(['test'], { cwd, env });
         expect(r.status, r.stderr).to.equal(0);
         expect(r.stdout).to.include('Contract: artifacts.require');
