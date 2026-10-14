@@ -155,15 +155,15 @@ describe('tronbox test', function () {
     });
 
     describe('test_failing', () => {
-      const env = { TEST_DIR: 'test_failing', BUILD_DIR: 'build_failing' };
-      const altBuildDir = path.join(cwd, env.BUILD_DIR);
+      const env = { TEST_DIR: 'test_failing' };
 
-      it('exits non-zero and reports the failure', () => {
-        fs.removeSync(altBuildDir);
-        const r = runCli(['test'], { cwd, env });
-        expect(r.status).to.not.equal(0);
-        expect(r.stdout).to.match(/\d+ failing/);
-        expect(r.stdout).to.include('intentional assertion failure');
+      [1, 2, 127, 130, 256, 512].forEach(failures => {
+        it(`exits with 1 and reports ${failures} failing tests`, () => {
+          const r = runCli(['test'], { cwd, env: { ...env, TEST_FAILURE_COUNT: String(failures) } });
+          expect(r.status, r.stderr).to.equal(1);
+          expect(r.stdout).to.include(`${failures} failing`);
+          expect(r.stdout).to.include('intentional assertion failure');
+        });
       });
     });
   });
