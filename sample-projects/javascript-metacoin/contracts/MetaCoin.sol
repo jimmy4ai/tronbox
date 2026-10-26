@@ -4,8 +4,9 @@ pragma solidity ^0.8.20;
 import { TRC20 } from '@openzeppelin/tron-contracts/token/TRC20/TRC20.sol';
 import './ConvertLib.sol';
 
-// To use console.log, you need TronBox Runtime Environment
-// (https://hub.docker.com/r/tronbox/tre) as your private network.
+// To use console.log, use TronBox Runtime Environment (TRE) or TVMJS client as your private network.
+// TRE: https://hub.docker.com/r/tronbox/tre
+// TVMJS client: https://www.npmjs.com/package/@tvmjs/client
 // Uncomment this line to use console.log
 // import "tronbox/console.sol";
 
