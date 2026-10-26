@@ -1,6 +1,7 @@
 // `tronbox init` writes a sample project into the current working directory.
 // Each test runs inside an isolated temp directory.
-// Requires TronBox Runtime Environment (https://hub.docker.com/r/tronbox/tre) or an EVM node.
+// The MetaCoin integration tests require local TRON and EVM development nodes
+// at the endpoints configured in the generated project.
 
 const { expect } = require('chai');
 const path = require('path');
